@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor & Booking Fasilitas MIAN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12">
+
+  <!-- Header Navigasi -->
+  <header class="bg-emerald-800 text-white shadow sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-mosque text-2xl text-emerald-300"></i>
+        <div>
+          <h1 class="text-lg font-bold leading-tight">Masjid Imam An-Nawawi (MIAN)</h1>
+          <p class="text-xs text-emerald-200">Sistem Penggunaan Fasilitas Lingkup Al-Hanif</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition">
+          <i class="fa-solid fa-table-list mr-1.5"></i> Monitor Jadwal
+        </button>
+        <button onclick="switchTab('booking')" id="tabBookingBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition">
+          <i class="fa-solid fa-calendar-plus mr-1.5"></i> Form Pengajuan
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 mt-6">
+
+    <!-- 1. TAB MONITOR JADWAL -->
+    <section id="sectionMonitor" class="space-y-4">
+      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          
+          <!-- Search -->
+          <div class="relative w-full sm:w-72">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+              <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </span>
+            <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari kegiatan, unit, pemateri..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-emerald-600">
+          </div>
+
+          <!-- Date Filter -->
+          <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
+              <label for="filterStartDate" class="text-slate-500 font-medium text-xs">Dari:</label>
+              <input type="date" id="filterStartDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-xs text-slate-700">
+            </div>
+            
+            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
+              <label for="filterEndDate" class="text-slate-500 font-medium text-xs">Sampai:</label>
+              <input type="date" id="filterEndDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-xs text-slate-700">
+            </div>
+
+            <button onclick="resetDateFilter()" title="Reset Filter" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-2 rounded-lg border border-slate-300 transition">
+              <i class="fa-solid fa-xmark"></i> Reset
+            </button>
+          </div>
+
+          <!-- Refresh Button -->
+          <button onclick="loadData()" class="text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-lg border border-slate-300 flex items-center gap-2 transition">
+            <i class="fa-solid fa-rotate-right"></i> Segarkan Data
+          </button>
+        </div>
+
+        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div class="flex items-center gap-2">
+            <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
+            <span>Tanggal Duplikat / Lebih dari 1 Acara</span>
+          </div>
+          <div id="recordCount" class="font-medium text-slate-600">Memuat data...</div>
+        </div>
+      </div>
+
+      <!-- Tabel -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead class="bg-slate-100 text-slate-700 border-b border-slate-200 font-semibold uppercase text-xs">
+              <tr>
+                <th class="p-3 w-10 text-center">No</th>
+                <th class="p-3">Tgl Acara</th>
+                <th class="p-3">Waktu</th>
+                <th class="p-3">Kegiatan</th>
+                <th class="p-3">Penyelenggara</th>
+                <th class="p-3">Pemateri</th>
+                <th class="p-3">Penanggung Jawab</th>
+                <th class="p-3">Kontak HP</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="8" class="text-center py-8 text-slate-400">
+                  <i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. TAB FORM PENGAJUAN -->
+    <section id="sectionBooking" class="hidden max-w-2xl mx-auto">
+      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+        <h2 class="text-xl font-bold text-slate-800 mb-1">Form Pengajuan Penggunaan MIAN</h2>
+        <p class="text-xs sm:text-sm text-slate-500 mb-6">Pilih tanggal terlebih dahulu untuk memeriksa slot jam yang tersedia.</p>
+
+        <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Acara *</label>
+              <input type="date" id="tglAcara" required onchange="onDateChanged()" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Penyelenggara (Unit Al-Hanif) *</label>
+              <select id="penyelenggara" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600 bg-white">
+                <option value="">Pilih Unit Yayasan...</option>
+                <option value="SDIT Alhanif">SDIT Alhanif</option>
+                <option value="SMPIT Putri Alhanif">SMPIT Putri Alhanif</option>
+                <option value="SMAIT Putri Alhanif">SMAIT Putri Alhanif</option>
+                <option value="RA Alhanif">RA Alhanif</option>
+                <option value="KBIH Alhanif">KBIH Alhanif</option>
+                <option value="DKM MIAN">DKM MIAN</option>
+                <option value="Lajnah Dakwah">Lajnah Dakwah</option>
+                <option value="Tim Janiz MIAN">Tim Janiz MIAN</option>
+                <option value="Lainnya">Lainnya / Tamu</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Status Slot -->
+          <div id="availabilityPanel" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
+            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Status Ketersediaan Slot</span>
+            <div id="slotStatus" class="text-xs text-slate-500">
+              Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.
+            </div>
+          </div>
+
+          <!-- Jam In & Out -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Mulai *</label>
+              <input type="time" id="jamMulai" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Selesai *</label>
+              <input type="time" id="jamSelesai" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan *</label>
+            <input type="text" id="namaKegiatan" required placeholder="Contoh: Kajian Ilmiah / Wisuda Tahfidz" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Pemateri / Pengisi Acara</label>
+            <input type="text" id="pemateri" placeholder="Diisi nama ustadz / narasumber (jika ada)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Penanggung Jawab *</label>
+              <input type="text" id="penanggungJawab" required placeholder="Nama lengkap PJ" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">
+                Nomor HP (WhatsApp) * <span class="text-[11px] text-emerald-700 font-normal">(Format: 628xxxx)</span>
+              </label>
+              <input 
+                type="tel" 
+                id="nomorHP" 
+                required 
+                placeholder="Contoh: 628123456789" 
+                pattern="^628[0-9]{8,12}$"
+                title="Wajib format internasional diawali 628 (contoh: 628123456789)"
+                class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
+            <input type="email" id="emailAddress" placeholder="alamat@gmail.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+          </div>
+
+          <div class="pt-3">
+            <button type="submit" id="submitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // URL Web App Google Apps Script
+    const API_URL = "https://script.google.com/macros/s/AKfycbw8gHdsGl43s0li3Y1yFnwjw7s6H_xDxTRgn7UpDXGuNR8o_0HglocKQfjxuWh_RrnZ6Q/exec";
+
+    let masterData = [];
+
+    window.onload = function() {
+      loadData();
+    };
+
+    function switchTab(tab) {
+      const monSec = document.getElementById('sectionMonitor');
+      const bookSec = document.getElementById('sectionBooking');
+      const tabMonBtn = document.getElementById('tabMonitorBtn');
+      const tabBookBtn = document.getElementById('tabBookingBtn');
+
+      if (tab === 'monitor') {
+        monSec.classList.remove('hidden');
+        bookSec.classList.add('hidden');
+        tabMonBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition";
+        tabBookBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition";
+      } else {
+        monSec.classList.add('hidden');
+        bookSec.classList.remove('hidden');
+        tabMonBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition";
+        tabBookBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition";
+      }
+    }
+
+    // Ambil Data via FETCH API
+    function loadData() {
+      const tbody = document.getElementById('tableBody');
+      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
+
+      fetch(API_URL)
+        .then(res => res.json())
+        .then(data => {
+          masterData = data;
+          filterTable();
+        })
+        .catch(err => {
+          console.error(err);
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500 text-xs">Gagal mengambil data dari server. Pastikan deployment Apps Script diset ke "Anyone".</td></tr>`;
+        });
+    }
+
+    function parseDMY(dateStr) {
+      if (!dateStr) return null;
+      const parts = dateStr.split('/');
+      if (parts.length === 3) {
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+      }
+      return null;
+    }
+
+    function resetDateFilter() {
+      document.getElementById('filterStartDate').value = '';
+      document.getElementById('filterEndDate').value = '';
+      filterTable();
+    }
+
+    function filterTable() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const startVal = document.getElementById('filterStartDate').value;
+      const endVal = document.getElementById('filterEndDate').value;
+      const tbody = document.getElementById('tableBody');
+      const countLabel = document.getElementById('recordCount');
+      tbody.innerHTML = '';
+
+      const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
+      const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
+
+      const dateCounts = {};
+      masterData.forEach(item => {
+        if (item.tglAcara) {
+          dateCounts[item.tglAcara] = (dateCounts[item.tglAcara] || 0) + 1;
+        }
+      });
+
+      const filtered = masterData.filter(d => {
+        const matchesKeyword = 
+          (d.namaKegiatan && d.namaKegiatan.toLowerCase().includes(q)) ||
+          (d.penyelenggara && d.penyelenggara.toLowerCase().includes(q)) ||
+          (d.pemateri && d.pemateri.toLowerCase().includes(q)) ||
+          (d.penanggungJawab && d.penanggungJawab.toLowerCase().includes(q)) ||
+          (d.tglAcara && d.tglAcara.includes(q));
+
+        if (!matchesKeyword) return false;
+
+        if (startDate || endDate) {
+          const rowDate = parseDMY(d.tglAcara);
+          if (!rowDate) return false;
+          if (startDate && rowDate < startDate) return false;
+          if (endDate && rowDate > endDate) return false;
+        }
+
+        return true;
+      });
+
+      countLabel.innerText = `Menampilkan: ${filtered.length} acara`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400 text-xs">Tidak ada data jadwal ditemukan pada filter ini.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach((row, index) => {
+        const isDuplicate = dateCounts[row.tglAcara] > 1;
+        const dateCellClass = isDuplicate 
+          ? "p-3 font-bold bg-red-600 text-yellow-300 rounded whitespace-nowrap shadow-sm"
+          : "p-3 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
+
+        const cleanHP = row.nomorHP ? String(row.nomorHP).replace(/[^0-9]/g, '') : '';
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50/80 transition";
+        tr.innerHTML = `
+          <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
+          <td class="p-2">
+            <span class="${dateCellClass} inline-block px-2.5 py-1">
+              ${row.tglAcara}
+              ${isDuplicate ? '<i class="fa-solid fa-triangle-exclamation ml-1 text-xs" title="Tanggal duplikat"></i>' : ''}
+            </span>
+          </td>
+          <td class="p-3 font-mono text-xs text-slate-600 whitespace-nowrap">${row.jamMulai} - ${row.jamSelesai}</td>
+          <td class="p-3 font-medium text-slate-800 text-xs sm:text-sm">${row.namaKegiatan}</td>
+          <td class="p-3">
+            <span class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border bg-emerald-50 text-emerald-800 border-emerald-200">
+              ${row.penyelenggara}
+            </span>
+          </td>
+          <td class="p-3 text-xs text-slate-600">${row.pemateri}</td>
+          <td class="p-3 text-xs text-slate-700">${row.penanggungJawab}</td>
+          <td class="p-3 text-xs font-mono">
+            ${cleanHP ? `
+              <a href="https://wa.me/${cleanHP}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-md border border-emerald-200 transition font-medium">
+                <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
+                <span>${row.nomorHP}</span>
+              </a>
+            ` : '<span class="text-slate-400">-</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Cek Ketersediaan Jam Real-Time
+    function onDateChanged() {
+      const tgl = document.getElementById('tglAcara').value;
+      const statusDiv = document.getElementById('slotStatus');
+      if (!tgl) return;
+
+      statusDiv.innerHTML = `<span class="text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa ketersediaan jam...</span>`;
+
+      fetch(`${API_URL}?action=checkAvailability&tgl=${tgl}`)
+        .then(res => res.json())
+        .then(result => {
+          if (!result.terpakai || result.terpakai.length === 0) {
+            statusDiv.innerHTML = `
+              <div class="flex items-center gap-2 text-emerald-700 font-medium">
+                <i class="fa-solid fa-circle-check text-base"></i>
+                <span><b>Tersedia Seharian Penuh!</b> Belum ada jadwal terdaftar di tanggal ${result.tanggal}.</span>
+              </div>
+            `;
+          } else {
+            const listJadwal = result.terpakai.map(item => `
+              <li class="text-xs text-slate-700">
+                <span class="font-semibold text-rose-600 font-mono">${item.jamMulai} - ${item.jamSelesai}</span> : ${item.namaKegiatan} <span class="text-slate-500">(${item.penyelenggara})</span>
+              </li>
+            `).join('');
+
+            statusDiv.innerHTML = `
+              <div class="space-y-1.5">
+                <div class="flex items-center gap-1.5 text-amber-700 font-semibold text-xs">
+                  <i class="fa-solid fa-triangle-exclamation"></i>
+                  <span>Slot Jam yang Sudah Terisi pada Tanggal ${result.tanggal}:</span>
+                </div>
+                <ul class="list-disc list-inside bg-white p-2.5 rounded-lg border border-slate-200 space-y-1">
+                  ${listJadwal}
+                </ul>
+                <p class="text-[11px] text-slate-500 pt-0.5">
+                  💡 Silakan pilih jam di luar rentang waktu di atas atau pilih tanggal lain jika diperlukan.
+                </p>
+              </div>
+            `;
+          }
+        })
+        .catch(err => {
+          statusDiv.innerText = "Gagal memeriksa jadwal.";
+        });
+    }
+
+    // Submit Booking dengan FETCH POST
+    function handleFormSubmit(e) {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+
+      let noHP = document.getElementById('nomorHP').value.trim().replace(/[^0-9]/g, '');
+      if (noHP.startsWith('08')) noHP = '62' + noHP.slice(1);
+      else if (noHP.startsWith('8')) noHP = '62' + noHP;
+
+      const hpRegex = /^628[0-9]{8,12}$/;
+      if (!hpRegex.test(noHP)) {
+        alert('Nomor HP tidak valid!\nNomor HP wajib menggunakan format internasional diawali 628.');
+        document.getElementById('nomorHP').focus();
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyimpan & Mengirim Notifikasi...`;
+
+      const payload = {
+        tglAcara: document.getElementById('tglAcara').value,
+        penyelenggara: document.getElementById('penyelenggara').value,
+        jamMulai: document.getElementById('jamMulai').value,
+        jamSelesai: document.getElementById('jamSelesai').value,
+        namaKegiatan: document.getElementById('namaKegiatan').value,
+        pemateri: document.getElementById('pemateri').value,
+        penanggungJawab: document.getElementById('penanggungJawab').value,
+        nomorHP: noHP,
+        emailAddress: document.getElementById('emailAddress').value
+      };
+
+      // Catatan: Menggunakan text/plain mode no-cors/cors standard untuk Apps Script
+      fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(res => res.json())
+      .then(res => {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
+
+        if (res.success) {
+          alert('Pengajuan berhasil disimpan dan notifikasi WA telah diproses!');
+          document.getElementById('bookingForm').reset();
+          document.getElementById('slotStatus').innerText = 'Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.';
+          loadData();
+          switchTab('monitor');
+        } else {
+          alert('Gagal: ' + res.message);
+        }
+      })
+      .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
+        // Fallback alert jika response CORS redirect terbaca error oleh browser namun data tetap masuk
+        alert('Pengajuan telah dikirim! Memperbarui data...');
+        document.getElementById('bookingForm').reset();
+        loadData();
+        switchTab('monitor');
+      });
+    }
+  </script>
+</body>
+</html>
