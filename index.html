@@ -9,14 +9,14 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12">
 
-  <!-- Header Navigasi -->
+  <!-- Nav Header -->
   <header class="bg-emerald-800 text-white shadow sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
       <div class="flex items-center gap-3">
         <i class="fa-solid fa-mosque text-2xl text-emerald-300"></i>
         <div>
           <h1 class="text-lg font-bold leading-tight">Masjid Imam An-Nawawi (MIAN)</h1>
-          <p class="text-xs text-emerald-200">Sistem Penggunaan Fasilitas Lingkup Al-Hanif</p>
+          <p class="text-xs text-emerald-200">Sistem Penggunaan Fasilitas Lingkup Yayasan Al-Hanif</p>
         </div>
       </div>
       <div class="flex gap-2">
@@ -45,7 +45,7 @@
             <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari kegiatan, unit, pemateri..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-emerald-600">
           </div>
 
-          <!-- Date Filter -->
+          <!-- Date Filter (Dari - Sampai) -->
           <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
               <label for="filterStartDate" class="text-slate-500 font-medium text-xs">Dari:</label>
@@ -57,7 +57,7 @@
               <input type="date" id="filterEndDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-xs text-slate-700">
             </div>
 
-            <button onclick="resetDateFilter()" title="Reset Filter" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-2 rounded-lg border border-slate-300 transition">
+            <button onclick="resetDateFilter()" title="Reset Filter Tanggal" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-2 rounded-lg border border-slate-300 transition">
               <i class="fa-solid fa-xmark"></i> Reset
             </button>
           </div>
@@ -68,6 +68,7 @@
           </button>
         </div>
 
+        <!-- Legend Tanggal Duplikat -->
         <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
           <div class="flex items-center gap-2">
             <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
@@ -77,7 +78,7 @@
         </div>
       </div>
 
-      <!-- Tabel -->
+      <!-- Tabel Monitor -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
@@ -113,6 +114,7 @@
 
         <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
           
+          <!-- Tanggal & Unit -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Acara *</label>
@@ -135,7 +137,7 @@
             </div>
           </div>
 
-          <!-- Status Slot -->
+          <!-- Panel Status Slot Real-Time -->
           <div id="availabilityPanel" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
             <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Status Ketersediaan Slot</span>
             <div id="slotStatus" class="text-xs text-slate-500">
@@ -143,7 +145,7 @@
             </div>
           </div>
 
-          <!-- Jam In & Out -->
+          <!-- Jam Mulai & Jam Selesai -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Mulai *</label>
@@ -155,6 +157,7 @@
             </div>
           </div>
 
+          <!-- Kegiatan & Pemateri -->
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan *</label>
             <input type="text" id="namaKegiatan" required placeholder="Contoh: Kajian Ilmiah / Wisuda Tahfidz" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
@@ -165,6 +168,7 @@
             <input type="text" id="pemateri" placeholder="Diisi nama ustadz / narasumber (jika ada)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
           </div>
 
+          <!-- Penanggung Jawab & HP -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Penanggung Jawab *</label>
@@ -172,7 +176,7 @@
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
-                Nomor HP (WhatsApp) * <span class="text-[11px] text-emerald-700 font-normal">(Format: 628xxxx)</span>
+                Nomor HP (WhatsApp) * <span class="text-[11px] text-emerald-700 font-normal">(Wajib format: 628xxxx)</span>
               </label>
               <input 
                 type="tel" 
@@ -190,6 +194,7 @@
             <input type="email" id="emailAddress" placeholder="alamat@gmail.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
           </div>
 
+          <!-- Tombol Submit -->
           <div class="pt-3">
             <button type="submit" id="submitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2">
               <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan
@@ -202,7 +207,7 @@
   </main>
 
   <script>
-    // URL Web App Google Apps Script
+    // Endpoint Apps Script Deployment Aktif
     const API_URL = "https://script.google.com/macros/s/AKfycbw8gHdsGl43s0li3Y1yFnwjw7s6H_xDxTRgn7UpDXGuNR8o_0HglocKQfjxuWh_RrnZ6Q/exec";
 
     let masterData = [];
@@ -230,21 +235,31 @@
       }
     }
 
-    // Ambil Data via FETCH API
+    // Helper JSONP: Mengambil data tanpa terhalang CORS
+    function fetchJSONP(url, callbackName) {
+      const existing = document.getElementById('jsonp_' + callbackName);
+      if (existing) existing.remove();
+
+      const script = document.createElement('script');
+      script.id = 'jsonp_' + callbackName;
+      script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}&_=${Date.now()}`;
+      script.onerror = function() {
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500 text-xs">Gagal terhubung ke Apps Script. Pastikan akses deployment adalah "Anyone".</td></tr>`;
+      };
+      document.body.appendChild(script);
+    }
+
+    // 1. Ambil Data Jadwal
     function loadData() {
       const tbody = document.getElementById('tableBody');
       tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
 
-      fetch(API_URL)
-        .then(res => res.json())
-        .then(data => {
-          masterData = data;
-          filterTable();
-        })
-        .catch(err => {
-          console.error(err);
-          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500 text-xs">Gagal mengambil data dari server. Pastikan deployment Apps Script diset ke "Anyone".</td></tr>`;
-        });
+      window.handleMonitorData = function(data) {
+        masterData = data;
+        filterTable();
+      };
+
+      fetchJSONP(API_URL, 'handleMonitorData');
     }
 
     function parseDMY(dateStr) {
@@ -273,6 +288,7 @@
       const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
       const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
 
+      // Hitung duplikasi tanggal
       const dateCounts = {};
       masterData.forEach(item => {
         if (item.tglAcara) {
@@ -322,7 +338,7 @@
           <td class="p-2">
             <span class="${dateCellClass} inline-block px-2.5 py-1">
               ${row.tglAcara}
-              ${isDuplicate ? '<i class="fa-solid fa-triangle-exclamation ml-1 text-xs" title="Tanggal duplikat"></i>' : ''}
+              ${isDuplicate ? '<i class="fa-solid fa-triangle-exclamation ml-1 text-xs" title="Tanggal memiliki lebih dari satu acara"></i>' : ''}
             </span>
           </td>
           <td class="p-3 font-mono text-xs text-slate-600 whitespace-nowrap">${row.jamMulai} - ${row.jamSelesai}</td>
@@ -347,7 +363,7 @@
       });
     }
 
-    // Cek Ketersediaan Jam Real-Time
+    // 2. Cek Ketersediaan Slot Jam Real-Time
     function onDateChanged() {
       const tgl = document.getElementById('tglAcara').value;
       const statusDiv = document.getElementById('slotStatus');
@@ -355,45 +371,42 @@
 
       statusDiv.innerHTML = `<span class="text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa ketersediaan jam...</span>`;
 
-      fetch(`${API_URL}?action=checkAvailability&tgl=${tgl}`)
-        .then(res => res.json())
-        .then(result => {
-          if (!result.terpakai || result.terpakai.length === 0) {
-            statusDiv.innerHTML = `
-              <div class="flex items-center gap-2 text-emerald-700 font-medium">
-                <i class="fa-solid fa-circle-check text-base"></i>
-                <span><b>Tersedia Seharian Penuh!</b> Belum ada jadwal terdaftar di tanggal ${result.tanggal}.</span>
-              </div>
-            `;
-          } else {
-            const listJadwal = result.terpakai.map(item => `
-              <li class="text-xs text-slate-700">
-                <span class="font-semibold text-rose-600 font-mono">${item.jamMulai} - ${item.jamSelesai}</span> : ${item.namaKegiatan} <span class="text-slate-500">(${item.penyelenggara})</span>
-              </li>
-            `).join('');
+      window.handleSlotCheck = function(result) {
+        if (!result.terpakai || result.terpakai.length === 0) {
+          statusDiv.innerHTML = `
+            <div class="flex items-center gap-2 text-emerald-700 font-medium">
+              <i class="fa-solid fa-circle-check text-base"></i>
+              <span><b>Tersedia Seharian Penuh!</b> Belum ada jadwal terdaftar di tanggal ${result.tanggal}.</span>
+            </div>
+          `;
+        } else {
+          const listJadwal = result.terpakai.map(item => `
+            <li class="text-xs text-slate-700">
+              <span class="font-semibold text-rose-600 font-mono">${item.jamMulai} - ${item.jamSelesai}</span> : ${item.namaKegiatan} <span class="text-slate-500">(${item.penyelenggara})</span>
+            </li>
+          `).join('');
 
-            statusDiv.innerHTML = `
-              <div class="space-y-1.5">
-                <div class="flex items-center gap-1.5 text-amber-700 font-semibold text-xs">
-                  <i class="fa-solid fa-triangle-exclamation"></i>
-                  <span>Slot Jam yang Sudah Terisi pada Tanggal ${result.tanggal}:</span>
-                </div>
-                <ul class="list-disc list-inside bg-white p-2.5 rounded-lg border border-slate-200 space-y-1">
-                  ${listJadwal}
-                </ul>
-                <p class="text-[11px] text-slate-500 pt-0.5">
-                  💡 Silakan pilih jam di luar rentang waktu di atas atau pilih tanggal lain jika diperlukan.
-                </p>
+          statusDiv.innerHTML = `
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-1.5 text-amber-700 font-semibold text-xs">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span>Slot Jam yang Sudah Terisi pada Tanggal ${result.tanggal}:</span>
               </div>
-            `;
-          }
-        })
-        .catch(err => {
-          statusDiv.innerText = "Gagal memeriksa jadwal.";
-        });
+              <ul class="list-disc list-inside bg-white p-2.5 rounded-lg border border-slate-200 space-y-1">
+                ${listJadwal}
+              </ul>
+              <p class="text-[11px] text-slate-500 pt-0.5">
+                💡 Silakan pilih jam di luar rentang waktu di atas atau pilih tanggal lain jika diperlukan.
+              </p>
+            </div>
+          `;
+        }
+      };
+
+      fetchJSONP(`${API_URL}?action=checkAvailability&tgl=${tgl}`, 'handleSlotCheck');
     }
 
-    // Submit Booking dengan FETCH POST
+    // 3. Submit Form Menggunakan URLSearchParams + Mode no-cors
     function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -404,54 +417,49 @@
 
       const hpRegex = /^628[0-9]{8,12}$/;
       if (!hpRegex.test(noHP)) {
-        alert('Nomor HP tidak valid!\nNomor HP wajib menggunakan format internasional diawali 628.');
+        alert('Nomor HP tidak valid!\nNomor HP wajib menggunakan format internasional diawali 628 (contoh: 628123456789).');
         document.getElementById('nomorHP').focus();
         return;
       }
 
       btn.disabled = true;
-      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyimpan & Mengirim Notifikasi...`;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim Pengajuan & Notifikasi WA...`;
 
-      const payload = {
-        tglAcara: document.getElementById('tglAcara').value,
-        penyelenggara: document.getElementById('penyelenggara').value,
-        jamMulai: document.getElementById('jamMulai').value,
-        jamSelesai: document.getElementById('jamSelesai').value,
-        namaKegiatan: document.getElementById('namaKegiatan').value,
-        pemateri: document.getElementById('pemateri').value,
-        penanggungJawab: document.getElementById('penanggungJawab').value,
-        nomorHP: noHP,
-        emailAddress: document.getElementById('emailAddress').value
-      };
+      const params = new URLSearchParams();
+      params.append('tglAcara', document.getElementById('tglAcara').value);
+      params.append('penyelenggara', document.getElementById('penyelenggara').value);
+      params.append('jamMulai', document.getElementById('jamMulai').value);
+      params.append('jamSelesai', document.getElementById('jamSelesai').value);
+      params.append('namaKegiatan', document.getElementById('namaKegiatan').value);
+      params.append('pemateri', document.getElementById('pemateri').value);
+      params.append('penanggungJawab', document.getElementById('penanggungJawab').value);
+      params.append('nomorHP', noHP);
+      params.append('emailAddress', document.getElementById('emailAddress').value);
 
-      // Catatan: Menggunakan text/plain mode no-cors/cors standard untuk Apps Script
       fetch(API_URL, {
         method: 'POST',
+        mode: 'no-cors',
         headers: {
-          'Content-Type': 'text/plain;charset=utf-8'
+          'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify(payload)
+        body: params.toString()
       })
-      .then(res => res.json())
-      .then(res => {
+      .then(() => {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
-
-        if (res.success) {
-          alert('Pengajuan berhasil disimpan dan notifikasi WA telah diproses!');
-          document.getElementById('bookingForm').reset();
-          document.getElementById('slotStatus').innerText = 'Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.';
+        alert('Pengajuan berhasil dikirim!\nNotifikasi WhatsApp sedang dikirim ke nomor pemohon dan Admin.');
+        document.getElementById('bookingForm').reset();
+        document.getElementById('slotStatus').innerText = 'Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.';
+        
+        setTimeout(() => {
           loadData();
           switchTab('monitor');
-        } else {
-          alert('Gagal: ' + res.message);
-        }
+        }, 1500);
       })
       .catch(err => {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
-        // Fallback alert jika response CORS redirect terbaca error oleh browser namun data tetap masuk
-        alert('Pengajuan telah dikirim! Memperbarui data...');
+        alert('Pengajuan terkirim! Memperbarui data...');
         document.getElementById('bookingForm').reset();
         loadData();
         switchTab('monitor');
