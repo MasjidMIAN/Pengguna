@@ -364,6 +364,14 @@
       return `${hari}, ${dmyStr}`;
     }
 
+    // Menyamarkan nomor HP: 3 asterisk + 6 digit terakhir (contoh: ***929294)
+    function maskNomorHP(hp) {
+      if (!hp) return '-';
+      const clean = String(hp).replace(/[^0-9]/g, '');
+      if (clean.length <= 6) return '***' + clean;
+      return '***' + clean.slice(-6);
+    }
+
     // Helper: Cek apakah jadwal sudah lewat dibandingkan saat ini
     function isEventPast(dmyStr, jamOutStr) {
       if (!dmyStr) return false;
@@ -463,6 +471,7 @@
           : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
 
         const cleanHP = row.nomorHP ? String(row.nomorHP).replace(/[^0-9]/g, '') : '';
+        const maskedHP = maskNomorHP(row.nomorHP);
         const teksTglDenganHari = getHariTanggal(row.tglAcara);
 
         let statusBadge = '';
@@ -502,9 +511,9 @@
           <td class="p-3 text-xs text-slate-700">${row.penanggungJawab}</td>
           <td class="p-3 text-xs font-mono">
             ${cleanHP ? `
-              <a href="https://wa.me/${cleanHP}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-md border border-emerald-200 transition font-medium">
+              <a href="https://wa.me/${cleanHP}" target="_blank" rel="noopener noreferrer" title="Chat WhatsApp PJ" class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 rounded-md border border-emerald-200 transition font-medium">
                 <i class="fa-brands fa-whatsapp text-emerald-600 text-sm"></i>
-                <span>${row.nomorHP}</span>
+                <span>${maskedHP}</span>
               </a>
             ` : '<span class="text-slate-400">-</span>'}
           </td>
