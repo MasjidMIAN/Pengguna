@@ -20,6 +20,7 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Monitor & Pengajuan Izin Penggunaan Fasilitas Masjid Imam An-Nawawi (MIAN)">
   <meta property="og:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
+  <meta property="og:url" content="https://masjidmian.github.io/Pengguna/">
   <meta property="og:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=2">
   <meta property="og:image:secure_url" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=2">
   <meta property="og:image:type" content="image/jpeg">
@@ -65,7 +66,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen pb-24 md:pb-12 relative selection:bg-emerald-200">
 
-  <!-- Container Toast Notification (Mengambang di Atas Tengah pada HP) -->
+  <!-- Container Toast Notification -->
   <div id="toastContainer" class="fixed top-3 inset-x-0 sm:inset-x-auto sm:right-5 z-50 flex flex-col items-center sm:items-end gap-2.5 max-w-sm sm:w-full pointer-events-none px-4 sm:px-0"></div>
 
   <!-- Header Navigasi -->
@@ -81,7 +82,7 @@
         </div>
       </div>
 
-      <!-- Navigasi Desktop (Disembunyikan di Layar Ponsel) -->
+      <!-- Navigasi Desktop -->
       <div class="hidden md:flex gap-2">
         <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm">
           <i class="fa-solid fa-table-list mr-1.5"></i> Monitor Jadwal
@@ -98,7 +99,7 @@
     <!-- 1. TAB MONITOR JADWAL -->
     <section id="sectionMonitor" class="space-y-3 sm:space-y-4">
       
-      <!-- Panel Filter & Pencarian Kompak -->
+      <!-- Panel Filter & Pencarian -->
       <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
         
         <!-- Search Input -->
@@ -112,7 +113,7 @@
           </button>
         </div>
 
-        <!-- Filter Rentang Tanggal Grid Mobile -->
+        <!-- Filter Rentang Tanggal -->
         <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
           <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl text-xs w-full sm:w-auto">
             <span class="text-slate-400 font-medium">Dari:</span>
@@ -158,14 +159,13 @@
         </div>
       </div>
 
-      <!-- VIEW DESKTOP: TABEL STANDAR HANYA DI TABLET & LAPTOP -->
+      <!-- VIEW DESKTOP: TABEL STANDAR DENGAN KOLOM STATUS DI PALING KANAN -->
       <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
             <thead class="bg-emerald-900/10 text-slate-700 border-b border-slate-200 font-semibold uppercase text-xs">
               <tr>
                 <th class="p-3 w-10 text-center">No</th>
-                <th class="p-3 w-28 text-center">Status</th>
                 <th class="p-3">Hari & Tgl Acara</th>
                 <th class="p-3">Waktu</th>
                 <th class="p-3">Kegiatan</th>
@@ -173,6 +173,7 @@
                 <th class="p-3">Pemateri</th>
                 <th class="p-3">Penanggung Jawab</th>
                 <th class="p-3">Kontak HP</th>
+                <th class="p-3 w-28 text-center">Status</th>
               </tr>
             </thead>
             <tbody id="tableBody" class="table-zebra divide-y divide-slate-100">
@@ -198,7 +199,6 @@
 
         <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5 sm:space-y-4">
           
-          <!-- Tanggal & Unit -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Acara *</label>
@@ -222,7 +222,6 @@
             </div>
           </div>
 
-          <!-- Panel Cek Status Slot Real-Time -->
           <div id="availabilityPanel" class="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-slate-50/80">
             <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Status Ketersediaan Slot</span>
             <div id="slotStatus" class="text-xs text-slate-500 leading-relaxed">
@@ -230,7 +229,6 @@
             </div>
           </div>
 
-          <!-- Jam In & Out -->
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Mulai *</label>
@@ -288,7 +286,7 @@
 
   </main>
 
-  <!-- BOTTOM NAVIGATION BAR KHUSUS MOBILE (DIPAKAI DENGAN SATU JEMPOL) -->
+  <!-- BOTTOM NAVIGATION BAR MOBILE -->
   <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg px-6 py-2 flex justify-around items-center">
     <button onclick="switchTab('monitor')" id="mNavMonitor" class="flex flex-col items-center gap-1 text-emerald-700 font-bold transition">
       <div class="w-9 h-7 rounded-full flex items-center justify-center bg-emerald-100">
@@ -310,7 +308,6 @@
     let masterData = [];
     const NAMA_HARI = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"];
 
-    // Registrasi PWA Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -323,7 +320,6 @@
       loadData();
     };
 
-    // --- KOMPONEN TOAST NOTIFICATION ---
     function showToast(type, title, message) {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
@@ -368,7 +364,6 @@
       }, 250);
     }
 
-    // Navigasi Tab (Mendukung Desktop & Bottom Nav Mobile)
     function switchTab(tab) {
       const monSec = document.getElementById('sectionMonitor');
       const bookSec = document.getElementById('sectionBooking');
@@ -489,7 +484,6 @@
       });
     }
 
-    // Render Tabel (Desktop) & Kartu Dinamis (Mobile)
     function filterTable() {
       const q = document.getElementById('searchInput').value.toLowerCase();
       const startVal = document.getElementById('filterStartDate').value;
@@ -555,7 +549,6 @@
         const maskedHP = maskNomorHP(row.nomorHP);
         const teksTglDenganHari = getHariTanggal(row.tglAcara);
 
-        // Badge Status Selesai / Aktif
         const statusBadge = past ? `
           <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
             <i class="fa-solid fa-check-double text-[10px]"></i> Selesai
@@ -566,7 +559,7 @@
           </span>
         `;
 
-        // 1. RENDER KARTU KHUSUS MOBILE
+        // 1. RENDER KARTU MOBILE
         const card = document.createElement('div');
         const borderDuplikat = isDuplicate ? 'border-l-4 border-l-red-600' : 'border-l-4 border-l-emerald-600';
         card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderDuplikat} ${past ? 'opacity-70' : ''}`;
@@ -611,7 +604,7 @@
         `;
         mobileList.appendChild(card);
 
-        // 2. RENDER BARIS TABEL KHUSUS DESKTOP
+        // 2. RENDER TABEL DESKTOP (Status di Kolom Paling Kanan)
         const dateCellClass = isDuplicate 
           ? "p-2 font-bold bg-red-600 text-yellow-300 rounded whitespace-nowrap shadow-sm"
           : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
@@ -620,7 +613,6 @@
         tr.className = past ? "opacity-75 transition" : "transition";
         tr.innerHTML = `
           <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
-          <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
           <td class="p-2">
             <span class="${dateCellClass} inline-block px-2.5 py-1">
               ${teksTglDenganHari}
@@ -644,6 +636,7 @@
               </a>
             ` : '<span class="text-slate-400">-</span>'}
           </td>
+          <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
         `;
         tbody.appendChild(tr);
       });
