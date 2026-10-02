@@ -4,6 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitor & Booking Fasilitas MIAN</title>
+
+  <!-- PWA & Mobile Meta -->
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#065f46">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Jadwal MIAN">
+
+  <!-- Favicon & Apple Touch Icon (SVG High-Res) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23065f46'/%3E%3Cpath d='M256 70c-15 35-40 55-70 65 30 10 55 30 70 65 15-35 40-55 70-65-30-10-55-30-70-65z' fill='%236ee7b7'/%3E%3Cpath d='M160 250c0-60 40-100 96-100s96 40 96 100v170H160V250z' fill='%2334d399'/%3E%3Cpath d='M210 420v-90c0-25 20-45 46-45s46 20 46 45v90h-92z' fill='%23064e3b'/%3E%3Ccircle cx='256' cy='85' r='12' fill='%23fef08a'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23065f46'/%3E%3Cpath d='M256 70c-15 35-40 55-70 65 30 10 55 30 70 65 15-35 40-55 70-65-30-10-55-30-70-65z' fill='%236ee7b7'/%3E%3Cpath d='M160 250c0-60 40-100 96-100s96 40 96 100v170H160V250z' fill='%2334d399'/%3E%3Cpath d='M210 420v-90c0-25 20-45 46-45s46 20 46 45v90h-92z' fill='%23064e3b'/%3E%3Ccircle cx='256' cy='85' r='12' fill='%23fef08a'/%3E%3C/svg%3E">
+
+  <!-- Open Graph & WhatsApp Preview Metadata -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Monitor & Pengajuan Fasilitas Masjid Imam An-Nawawi (MIAN)">
+  <meta property="og:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
+  <meta property="og:image" content="https://images.unsplash.com/photo-1591604129939-f1efa4d9f7fa?w=1200&h=630&fit=crop&q=80">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:url" content="https://masjidmian.github.io/Pengguna/">
+
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -102,13 +123,11 @@
         <!-- Filter Checkbox & Status Bar -->
         <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
           <div class="flex flex-wrap items-center gap-4">
-            <!-- Checkbox Sembunyikan Kegiatan Selesai (Default Tercentang) -->
             <label class="flex items-center gap-2 cursor-pointer select-none font-medium bg-emerald-50 text-emerald-900 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
               <input type="checkbox" id="hidePastEvents" checked onchange="filterTable()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-slate-300 accent-emerald-600 cursor-pointer">
               <span>Sembunyikan Jadwal selesai</span>
             </label>
 
-            <!-- Keterangan Duplikat -->
             <div class="flex items-center gap-1.5 text-slate-500">
               <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
               <span>Tanggal Duplikat</span>
@@ -249,9 +268,16 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbw8gHdsGl43s0li3Y1yFnwjw7s6H_xDxTRgn7UpDXGuNR8o_0HglocKQfjxuWh_RrnZ6Q/exec";
 
     let masterData = [];
-
-    // Daftar nama hari
     const NAMA_HARI = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"];
+
+    // Registrasi PWA Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(() => console.log('PWA Service Worker registered'))
+          .catch((err) => console.log('SW registration failed:', err));
+      });
+    }
 
     window.onload = function() {
       loadData();
@@ -356,7 +382,6 @@
       return null;
     }
 
-    // Mengambil Nama Hari + Tanggal (contoh: Ahad, 04/10/2026)
     function getHariTanggal(dmyStr) {
       const d = parseDMY(dmyStr);
       if (!d) return dmyStr;
@@ -364,7 +389,6 @@
       return `${hari}, ${dmyStr}`;
     }
 
-    // Menyamarkan nomor HP: 3 asterisk + 6 digit terakhir (contoh: ***929294)
     function maskNomorHP(hp) {
       if (!hp) return '-';
       const clean = String(hp).replace(/[^0-9]/g, '');
@@ -372,7 +396,6 @@
       return '***' + clean.slice(-6);
     }
 
-    // Helper: Cek apakah jadwal sudah lewat dibandingkan saat ini
     function isEventPast(dmyStr, jamOutStr) {
       if (!dmyStr) return false;
       const parts = dmyStr.split('/');
@@ -419,7 +442,6 @@
       const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
       const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
 
-      // Hitung duplikasi tanggal
       const dateCounts = {};
       masterData.forEach(item => {
         if (item.tglAcara) {
@@ -454,7 +476,6 @@
       });
 
       filtered = sortChronological(filtered);
-
       countLabel.innerText = `Menampilkan: ${filtered.length} acara`;
 
       if (filtered.length === 0) {
