@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Monitor & Booking Fasilitas MIAN</title>
 
   <!-- PWA & Mobile Meta -->
@@ -16,21 +16,17 @@
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23065f46'/%3E%3Cpath d='M256 70c-15 35-40 55-70 65 30 10 55 30 70 65 15-35 40-55 70-65-30-10-55-30-70-65z' fill='%236ee7b7'/%3E%3Cpath d='M160 250c0-60 40-100 96-100s96 40 96 100v170H160V250z' fill='%2334d399'/%3E%3Cpath d='M210 420v-90c0-25 20-45 46-45s46 20 46 45v90h-92z' fill='%23064e3b'/%3E%3Ccircle cx='256' cy='85' r='12' fill='%23fef08a'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23065f46'/%3E%3Cpath d='M256 70c-15 35-40 55-70 65 30 10 55 30 70 65 15-35 40-55 70-65-30-10-55-30-70-65z' fill='%236ee7b7'/%3E%3Cpath d='M160 250c0-60 40-100 96-100s96 40 96 100v170H160V250z' fill='%2334d399'/%3E%3Cpath d='M210 420v-90c0-25 20-45 46-45s46 20 46 45v90h-92z' fill='%23064e3b'/%3E%3Ccircle cx='256' cy='85' r='12' fill='%23fef08a'/%3E%3C/svg%3E">
 
-
-<!-- Open Graph & WhatsApp Preview Metadata -->
+  <!-- Open Graph & WhatsApp Preview Metadata -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Monitor & Pengajuan Izin Penggunaan Fasilitas Masjid Imam An-Nawawi (MIAN)">
   <meta property="og:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
   <meta property="og:url" content="https://masjidmian.github.io/Pengguna/">
-  
-  <!-- Thumbnail Preview Khusus WhatsApp -->
   <meta property="og:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=1">
   <meta property="og:image:secure_url" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=1">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 
-  <!-- Twitter Card Fallback -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Monitor & Pengajuan Fasilitas Masjid Imam An-Nawawi (MIAN)">
   <meta name="twitter:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
@@ -38,8 +34,9 @@
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
   <style>
-    /* Zebra Cross Baris Genap: Biru Terang Lembut */
+    /* Zebra Cross Desktop */
     .table-zebra tr:nth-child(even) {
       background-color: #f0f7ff;
     }
@@ -52,38 +49,42 @@
 
     /* Animasi Toast */
     @keyframes slideIn {
-      from { transform: translateX(100%); opacity: 0; }
-      to { transform: translateX(0); opacity: 1; }
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
     }
     @keyframes slideOut {
-      from { transform: translateX(0); opacity: 1; }
-      to { transform: translateX(100%); opacity: 0; }
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(-100%); opacity: 0; }
     }
     .toast-enter {
-      animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .toast-exit {
-      animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: slideOut 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12 relative">
+<body class="bg-slate-100 text-slate-800 font-sans antialiased min-h-screen pb-24 md:pb-12 relative selection:bg-emerald-200">
 
-  <!-- Container Toast Notification (Pojok Kanan Atas) -->
-  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+  <!-- Container Toast Notification (Mengambang di Atas Tengah pada HP) -->
+  <div id="toastContainer" class="fixed top-3 inset-x-0 sm:inset-x-auto sm:right-5 z-50 flex flex-col items-center sm:items-end gap-2.5 max-w-sm sm:w-full pointer-events-none px-4 sm:px-0"></div>
 
   <!-- Header Navigasi -->
-  <header class="bg-emerald-800 text-white shadow sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
-      <div class="flex items-center gap-3">
-        <i class="fa-solid fa-mosque text-2xl text-emerald-300"></i>
+  <header class="bg-emerald-800 text-white shadow-md sticky top-0 z-40 border-b border-emerald-700">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center gap-3">
+      <div class="flex items-center gap-2.5">
+        <div class="w-9 h-9 rounded-xl bg-emerald-700 flex items-center justify-center text-emerald-200 shadow-inner">
+          <i class="fa-solid fa-mosque text-lg"></i>
+        </div>
         <div>
-          <h1 class="text-lg font-bold leading-tight">Masjid Imam An-Nawawi (MIAN)</h1>
-          <p class="text-xs text-emerald-200">Sistem Penggunaan Fasilitas MIAN Yayasan Al-Hanif</p>
+          <h1 class="text-sm md:text-base font-bold leading-tight">Masjid Imam An-Nawawi (MIAN)</h1>
+          <p class="text-[11px] text-emerald-200 font-medium leading-none mt-0.5">Fasilitas Yayasan Al-Hanif Cilegon</p>
         </div>
       </div>
-      <div class="flex gap-2">
-        <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition">
+
+      <!-- Navigasi Desktop (Disembunyikan di Layar Ponsel) -->
+      <div class="hidden md:flex gap-2">
+        <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm">
           <i class="fa-solid fa-table-list mr-1.5"></i> Monitor Jadwal
         </button>
         <button onclick="switchTab('booking')" id="tabBookingBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition">
@@ -93,64 +94,73 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-4 mt-6">
+  <main class="max-w-7xl mx-auto px-3 sm:px-4 mt-3 sm:mt-6">
 
     <!-- 1. TAB MONITOR JADWAL -->
-    <section id="sectionMonitor" class="space-y-4">
-      <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          
-          <!-- Search -->
-          <div class="relative w-full sm:w-72">
-            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-              <i class="fa-solid fa-magnifying-glass text-xs"></i>
-            </span>
-            <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari kegiatan, unit, pemateri..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-emerald-600">
-          </div>
-
-          <!-- Filter Tanggal (Dari - Sampai) -->
-          <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
-            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
-              <label for="filterStartDate" class="text-slate-500 font-medium text-xs">Dari:</label>
-              <input type="date" id="filterStartDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-xs text-slate-700">
-            </div>
-            
-            <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
-              <label for="filterEndDate" class="text-slate-500 font-medium text-xs">Sampai:</label>
-              <input type="date" id="filterEndDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-xs text-slate-700">
-            </div>
-
-            <button onclick="resetDateFilter()" title="Reset Filter Tanggal" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-600 px-2.5 py-2 rounded-lg border border-slate-300 transition">
-              <i class="fa-solid fa-xmark"></i> Reset
-            </button>
-          </div>
-
-          <!-- Refresh Button -->
-          <button onclick="loadData()" class="text-xs sm:text-sm bg-slate-100 hover:bg-slate-200 text-slate-700 px-3.5 py-2 rounded-lg border border-slate-300 flex items-center gap-2 transition">
-            <i class="fa-solid fa-rotate-right"></i> Segarkan Data
+    <section id="sectionMonitor" class="space-y-3 sm:space-y-4">
+      
+      <!-- Panel Filter & Pencarian Kompak -->
+      <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+        
+        <!-- Search Input -->
+        <div class="relative w-full">
+          <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+          </span>
+          <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari kegiatan, unit, pemateri..." class="w-full pl-9 pr-9 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
+          <button onclick="document.getElementById('searchInput').value=''; filterTable();" class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
+            <i class="fa-solid fa-circle-xmark text-xs"></i>
           </button>
         </div>
 
-        <!-- Filter Checkbox & Status Bar -->
-        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
-          <div class="flex flex-wrap items-center gap-4">
-            <label class="flex items-center gap-2 cursor-pointer select-none font-medium bg-emerald-50 text-emerald-900 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
-              <input type="checkbox" id="hidePastEvents" checked onchange="filterTable()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-slate-300 accent-emerald-600 cursor-pointer">
-              <span>Sembunyikan Jadwal selesai</span>
-            </label>
-
-            <div class="flex items-center gap-1.5 text-slate-500">
-              <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
-              <span>Tanggal Duplikat</span>
-            </div>
+        <!-- Filter Rentang Tanggal Grid Mobile -->
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl text-xs w-full sm:w-auto">
+            <span class="text-slate-400 font-medium">Dari:</span>
+            <input type="date" id="filterStartDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-slate-700 w-full text-xs cursor-pointer">
+          </div>
+          
+          <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-xl text-xs w-full sm:w-auto">
+            <span class="text-slate-400 font-medium">Sampai:</span>
+            <input type="date" id="filterEndDate" onchange="filterTable()" class="bg-transparent focus:outline-none text-slate-700 w-full text-xs cursor-pointer">
           </div>
 
-          <div id="recordCount" class="font-medium text-slate-600">Memuat data...</div>
+          <div class="col-span-2 sm:col-span-1 flex gap-2 w-full sm:w-auto mt-0.5 sm:mt-0">
+            <button onclick="resetDateFilter()" title="Reset Filter Tanggal" class="flex-1 sm:flex-none text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 py-2 px-3 rounded-xl border border-slate-200 transition text-center font-medium">
+              <i class="fa-solid fa-xmark mr-1"></i> Reset
+            </button>
+            <button onclick="loadData()" class="flex-1 sm:flex-none text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-800 py-2 px-3.5 rounded-xl border border-emerald-200 flex items-center justify-center gap-1.5 transition font-medium">
+              <i class="fa-solid fa-rotate-right"></i> Segarkan
+            </button>
+          </div>
+        </div>
+
+        <!-- Checkbox Filter Selesai & Indikator Duplikat -->
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2.5 text-xs">
+          <label class="flex items-center gap-2 cursor-pointer select-none font-medium bg-emerald-50/80 text-emerald-900 border border-emerald-200/80 px-2.5 py-1.5 rounded-xl hover:bg-emerald-100 transition">
+            <input type="checkbox" id="hidePastEvents" checked onchange="filterTable()" class="w-4 h-4 text-emerald-600 rounded border-slate-300 accent-emerald-600 cursor-pointer">
+            <span class="text-[11px] sm:text-xs">Sembunyikan jadwal selesai</span>
+          </label>
+
+          <div class="flex items-center gap-3">
+            <span class="flex items-center gap-1 text-[11px] text-slate-500">
+              <span class="inline-block w-3 h-3 rounded bg-red-600 border border-red-700"></span> Duplikat
+            </span>
+            <span id="recordCount" class="font-bold text-[11px] sm:text-xs text-slate-700">0 acara</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- VIEW MOBILE: TAMPILAN KARTU (CARD VIEW) HANYA DI HP -->
+      <div id="mobileCardList" class="block md:hidden space-y-2.5">
+        <div class="bg-white p-6 rounded-2xl text-center text-slate-400 text-xs border border-slate-200 shadow-sm">
+          <i class="fa-solid fa-spinner fa-spin text-base mr-1.5"></i> Memuat data jadwal...
         </div>
       </div>
 
-      <!-- Tabel Jadwal -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      <!-- VIEW DESKTOP: TABEL STANDAR HANYA DI TABLET & LAPTOP -->
+      <div class="hidden md:block bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
             <thead class="bg-emerald-900/10 text-slate-700 border-b border-slate-200 font-semibold uppercase text-xs">
@@ -179,21 +189,25 @@
     </section>
 
     <!-- 2. TAB FORM PENGAJUAN -->
-    <section id="sectionBooking" class="hidden max-w-2xl mx-auto">
-      <div class="bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
-        <h2 class="text-xl font-bold text-slate-800 mb-1">Form Pengajuan Penggunaan MIAN</h2>
-        <p class="text-xs sm:text-sm text-slate-500 mb-6">Pilih tanggal terlebih dahulu untuk memeriksa slot jam yang tersedia.</p>
+    <section id="sectionBooking" class="hidden max-w-2xl mx-auto pb-4">
+      <div class="bg-white p-4 sm:p-7 rounded-2xl border border-slate-200 shadow-sm">
+        
+        <div class="mb-4 sm:mb-6 pb-3 border-b border-slate-100">
+          <h2 class="text-base sm:text-lg font-bold text-slate-800">Form Pengajuan Penggunaan MIAN</h2>
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-0.5">Pilih tanggal terlebih dahulu untuk memeriksa ketersediaan jam fasilitas.</p>
+        </div>
 
-        <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+        <form id="bookingForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5 sm:space-y-4">
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- Tanggal & Unit -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Acara *</label>
-              <input type="date" id="tglAcara" required onchange="onDateChanged()" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+              <input type="date" id="tglAcara" required onchange="onDateChanged()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition cursor-pointer">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Penyelenggara (Unit Al-Hanif) *</label>
-              <select id="penyelenggara" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600 bg-white">
+              <select id="penyelenggara" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition cursor-pointer">
                 <option value="">Pilih Unit Yayasan...</option>
                 <option value="SDIT Alhanif">SDIT Alhanif</option>
                 <option value="SMPIT Putri Alhanif">SMPIT Putri Alhanif</option>
@@ -209,40 +223,40 @@
             </div>
           </div>
 
-          <!-- Status Slot -->
-          <div id="availabilityPanel" class="p-3.5 rounded-xl border border-slate-200 bg-slate-50">
-            <span class="text-xs font-semibold text-slate-500 uppercase tracking-wide block mb-1.5">Status Ketersediaan Slot</span>
-            <div id="slotStatus" class="text-xs text-slate-500">
+          <!-- Panel Cek Status Slot Real-Time -->
+          <div id="availabilityPanel" class="p-3 sm:p-3.5 rounded-xl border border-slate-200 bg-slate-50/80">
+            <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Status Ketersediaan Slot</span>
+            <div id="slotStatus" class="text-xs text-slate-500 leading-relaxed">
               Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.
             </div>
           </div>
 
           <!-- Jam In & Out -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Mulai *</label>
-              <input type="time" id="jamMulai" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+              <input type="time" id="jamMulai" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">Jam Selesai *</label>
-              <input type="time" id="jamSelesai" required class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+              <input type="time" id="jamSelesai" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Kegiatan *</label>
-            <input type="text" id="namaKegiatan" required placeholder="Contoh: Kajian Ilmiah / Wisuda Tahfidz" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            <input type="text" id="namaKegiatan" required placeholder="Contoh: Kajian Ilmiah / Wisuda Tahfidz" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Pemateri / Pengisi Acara</label>
-            <input type="text" id="pemateri" placeholder="Diisi nama ustadz / narasumber (jika ada)" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            <input type="text" id="pemateri" placeholder="Nama ustadz / narasumber (jika ada)" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             <div>
-              <label class="block text-xs font-semibold text-slate-700 mb-1">Penanggung Jawab *</label>
-              <input type="text" id="penanggungJawab" required placeholder="Nama lengkap PJ" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Penanggung Jawab (PJ) *</label>
+              <input type="text" id="penanggungJawab" required placeholder="Nama lengkap PJ" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
             </div>
             <div>
               <label class="block text-xs font-semibold text-slate-700 mb-1">
@@ -252,20 +266,20 @@
                 type="tel" 
                 id="nomorHP" 
                 required 
-                placeholder="Contoh: 628123456789" 
+                placeholder="628123456789" 
                 pattern="^628[0-9]{8,12}$"
-                title="Wajib format internasional diawali 628 (contoh: 628123456789)"
-                class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+                title="Wajib format internasional diawali 628"
+                class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
             </div>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Email Address</label>
-            <input type="email" id="emailAddress" placeholder="alamat@gmail.com" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:outline-emerald-600">
+            <input type="email" id="emailAddress" placeholder="alamat@gmail.com" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs sm:text-sm focus:outline-emerald-600 focus:bg-white transition">
           </div>
 
-          <div class="pt-3">
-            <button type="submit" id="submitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-3 rounded-xl font-semibold text-sm transition shadow-sm flex items-center justify-center gap-2">
+          <div class="pt-2">
+            <button type="submit" id="submitBtn" class="w-full bg-emerald-700 hover:bg-emerald-800 active:scale-[0.99] text-white py-3 sm:py-3.5 rounded-xl font-bold text-xs sm:text-sm transition shadow-md flex items-center justify-center gap-2">
               <i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan
             </button>
           </div>
@@ -274,6 +288,22 @@
     </section>
 
   </main>
+
+  <!-- BOTTOM NAVIGATION BAR KHUSUS MOBILE (DIPAKAI DENGAN SATU JEMPOL) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 shadow-lg px-6 py-2 flex justify-around items-center">
+    <button onclick="switchTab('monitor')" id="mNavMonitor" class="flex flex-col items-center gap-1 text-emerald-700 font-bold transition">
+      <div class="w-9 h-7 rounded-full flex items-center justify-center bg-emerald-100">
+        <i class="fa-solid fa-table-list text-sm"></i>
+      </div>
+      <span class="text-[10px]">Monitor</span>
+    </button>
+    <button onclick="switchTab('booking')" id="mNavBooking" class="flex flex-col items-center gap-1 text-slate-400 font-medium transition hover:text-slate-600">
+      <div class="w-9 h-7 rounded-full flex items-center justify-center">
+        <i class="fa-solid fa-calendar-plus text-sm"></i>
+      </div>
+      <span class="text-[10px]">Form Booking</span>
+    </button>
+  </nav>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbw8gHdsGl43s0li3Y1yFnwjw7s6H_xDxTRgn7UpDXGuNR8o_0HglocKQfjxuWh_RrnZ6Q/exec";
@@ -298,17 +328,17 @@
     function showToast(type, title, message) {
       const container = document.getElementById('toastContainer');
       const toast = document.createElement('div');
-      toast.className = "pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-lg border text-sm transition-all toast-enter";
+      toast.className = "pointer-events-auto w-full flex items-start gap-3 p-3.5 sm:p-4 rounded-2xl shadow-xl border text-sm transition-all toast-enter bg-white";
 
       let iconHtml = '';
       if (type === 'success') {
-        toast.classList.add('bg-white', 'border-emerald-200', 'text-slate-800');
+        toast.classList.add('border-emerald-200');
         iconHtml = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>';
       } else if (type === 'warning') {
-        toast.classList.add('bg-white', 'border-amber-200', 'text-slate-800');
+        toast.classList.add('border-amber-200');
         iconHtml = '<i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg mt-0.5"></i>';
       } else {
-        toast.classList.add('bg-white', 'border-rose-200', 'text-slate-800');
+        toast.classList.add('border-rose-200');
         iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-500 text-lg mt-0.5"></i>';
       }
 
@@ -318,7 +348,7 @@
           <h4 class="font-bold text-xs uppercase tracking-wide ${type === 'success' ? 'text-emerald-700' : type === 'warning' ? 'text-amber-700' : 'text-rose-700'}">${title}</h4>
           <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">${message}</p>
         </div>
-        <button onclick="dismissToast(this.parentElement)" class="text-slate-400 hover:text-slate-600 ml-2">
+        <button onclick="dismissToast(this.parentElement)" class="text-slate-400 hover:text-slate-600 ml-1">
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
       `;
@@ -336,25 +366,40 @@
       toast.classList.add('toast-exit');
       setTimeout(() => {
         toast.remove();
-      }, 300);
+      }, 250);
     }
 
+    // Navigasi Tab (Mendukung Desktop & Bottom Nav Mobile)
     function switchTab(tab) {
       const monSec = document.getElementById('sectionMonitor');
       const bookSec = document.getElementById('sectionBooking');
       const tabMonBtn = document.getElementById('tabMonitorBtn');
       const tabBookBtn = document.getElementById('tabBookingBtn');
+      const mNavMon = document.getElementById('mNavMonitor');
+      const mNavBook = document.getElementById('mNavBooking');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
 
       if (tab === 'monitor') {
         monSec.classList.remove('hidden');
         bookSec.classList.add('hidden');
-        tabMonBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition";
+        tabMonBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm";
         tabBookBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition";
+        
+        mNavMon.className = "flex flex-col items-center gap-1 text-emerald-700 font-bold transition";
+        mNavMon.querySelector('div').className = "w-9 h-7 rounded-full flex items-center justify-center bg-emerald-100";
+        mNavBook.className = "flex flex-col items-center gap-1 text-slate-400 font-medium transition hover:text-slate-600";
+        mNavBook.querySelector('div').className = "w-9 h-7 rounded-full flex items-center justify-center";
       } else {
         monSec.classList.add('hidden');
         bookSec.classList.remove('hidden');
         tabMonBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition";
-        tabBookBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition";
+        tabBookBtn.className = "px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm";
+
+        mNavBook.className = "flex flex-col items-center gap-1 text-emerald-700 font-bold transition";
+        mNavBook.querySelector('div').className = "w-9 h-7 rounded-full flex items-center justify-center bg-emerald-100";
+        mNavMon.className = "flex flex-col items-center gap-1 text-slate-400 font-medium transition hover:text-slate-600";
+        mNavMon.querySelector('div').className = "w-9 h-7 rounded-full flex items-center justify-center";
       }
     }
 
@@ -367,6 +412,7 @@
       script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}&_=${Date.now()}`;
       script.onerror = function() {
         document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="text-center py-6 text-rose-500 text-xs">Gagal memuat data dari server Apps Script.</td></tr>`;
+        document.getElementById('mobileCardList').innerHTML = `<div class="bg-white p-4 rounded-2xl text-center text-rose-500 text-xs border border-rose-200">Gagal memuat jadwal.</div>`;
         showToast('error', 'Koneksi Gagal', 'Tidak dapat mengambil jadwal dari Google Apps Script.');
       };
       document.body.appendChild(script);
@@ -374,7 +420,10 @@
 
     function loadData() {
       const tbody = document.getElementById('tableBody');
+      const mobileList = document.getElementById('mobileCardList');
+      
       tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
+      mobileList.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-slate-400 text-xs border border-slate-200 shadow-sm"><i class="fa-solid fa-spinner fa-spin mr-2 text-emerald-600"></i> Memuat data jadwal...</div>`;
 
       window.handleMonitorData = function(data) {
         masterData = data;
@@ -441,14 +490,18 @@
       });
     }
 
+    // Render Tabel (Desktop) & Kartu Dinamis (Mobile)
     function filterTable() {
       const q = document.getElementById('searchInput').value.toLowerCase();
       const startVal = document.getElementById('filterStartDate').value;
       const endVal = document.getElementById('filterEndDate').value;
       const hidePast = document.getElementById('hidePastEvents').checked;
       const tbody = document.getElementById('tableBody');
+      const mobileList = document.getElementById('mobileCardList');
       const countLabel = document.getElementById('recordCount');
+
       tbody.innerHTML = '';
+      mobileList.innerHTML = '';
 
       const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
       const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
@@ -487,10 +540,11 @@
       });
 
       filtered = sortChronological(filtered);
-      countLabel.innerText = `Menampilkan: ${filtered.length} acara`;
+      countLabel.innerText = `${filtered.length} acara`;
 
       if (filtered.length === 0) {
         tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400 text-xs">Tidak ada data jadwal ditemukan pada filter ini.</td></tr>`;
+        mobileList.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-slate-400 text-xs border border-slate-200">Tidak ada data jadwal ditemukan.</div>`;
         return;
       }
 
@@ -498,28 +552,70 @@
         const isDuplicate = dateCounts[row.tglAcara] > 1;
         const past = isEventPast(row.tglAcara, row.jamSelesai);
 
-        const dateCellClass = isDuplicate 
-          ? "p-2 font-bold bg-red-600 text-yellow-300 rounded whitespace-nowrap shadow-sm"
-          : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
-
         const cleanHP = row.nomorHP ? String(row.nomorHP).replace(/[^0-9]/g, '') : '';
         const maskedHP = maskNomorHP(row.nomorHP);
         const teksTglDenganHari = getHariTanggal(row.tglAcara);
 
-        let statusBadge = '';
-        if (past) {
-          statusBadge = `
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300" title="Jadwal acara telah selesai">
-              <i class="fa-solid fa-check-double text-emerald-600"></i> Selesai
+        // Badge Status Selesai / Aktif
+        const statusBadge = past ? `
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+            <i class="fa-solid fa-check-double text-[10px]"></i> Selesai
+          </span>
+        ` : `
+          <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-sky-100 text-sky-800 border border-sky-300">
+            <i class="fa-solid fa-clock text-[10px]"></i> Aktif
+          </span>
+        `;
+
+        // 1. RENDER KARTU KHUSUS MOBILE
+        const card = document.createElement('div');
+        const borderDuplikat = isDuplicate ? 'border-l-4 border-l-red-600' : 'border-l-4 border-l-emerald-600';
+        card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderDuplikat} ${past ? 'opacity-70' : ''}`;
+        
+        card.innerHTML = `
+          <div class="flex items-start justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-1.5 flex-wrap">
+                <span class="font-bold text-xs ${isDuplicate ? 'bg-red-600 text-yellow-300 px-2 py-0.5 rounded' : 'text-slate-800'}">
+                  ${teksTglDenganHari}
+                </span>
+                ${isDuplicate ? '<span class="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-1 rounded">Duplikat</span>' : ''}
+              </div>
+              <div class="font-mono text-xs font-semibold text-emerald-800 mt-1 flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-[11px]"></i>
+                <span>${row.jamMulai} - ${row.jamSelesai} WIB</span>
+              </div>
+            </div>
+            <div>${statusBadge}</div>
+          </div>
+
+          <div class="pt-1 border-t border-slate-100">
+            <h3 class="font-bold text-sm text-slate-800 leading-snug">${row.namaKegiatan}</h3>
+            ${row.pemateri !== '-' ? `<p class="text-xs text-slate-600 mt-0.5"><i class="fa-solid fa-user-tie text-[10px] mr-1 text-slate-400"></i>${row.pemateri}</p>` : ''}
+          </div>
+
+          <div class="flex items-center justify-between pt-1 text-xs border-t border-slate-50">
+            <span class="inline-block px-2.5 py-0.5 rounded-lg text-[11px] font-semibold border bg-emerald-50 text-emerald-800 border-emerald-200">
+              ${row.penyelenggara}
             </span>
-          `;
-        } else {
-          statusBadge = `
-            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sky-100 text-sky-800 border border-sky-300">
-              <i class="fa-solid fa-clock text-sky-600"></i> Aktif
-            </span>
-          `;
-        }
+
+            <div class="flex items-center gap-2">
+              <span class="text-slate-500 text-[11px]">${row.penanggungJawab}</span>
+              ${cleanHP ? `
+                <a href="https://wa.me/${cleanHP}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-600 text-white rounded-lg text-[11px] font-bold shadow-sm active:scale-95 transition">
+                  <i class="fa-brands fa-whatsapp text-xs"></i>
+                  <span>${maskedHP}</span>
+                </a>
+              ` : ''}
+            </div>
+          </div>
+        `;
+        mobileList.appendChild(card);
+
+        // 2. RENDER BARIS TABEL KHUSUS DESKTOP
+        const dateCellClass = isDuplicate 
+          ? "p-2 font-bold bg-red-600 text-yellow-300 rounded whitespace-nowrap shadow-sm"
+          : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
 
         const tr = document.createElement('tr');
         tr.className = past ? "opacity-75 transition" : "transition";
