@@ -99,11 +99,22 @@
           </button>
         </div>
 
-        <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-          <div class="flex items-center gap-2">
-            <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
-            <span>Tanggal Duplikat / Lebih dari 1 Acara</span>
+        <!-- Filter Checkbox & Status Bar -->
+        <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3 text-xs text-slate-600">
+          <div class="flex flex-wrap items-center gap-4">
+            <!-- Checkbox Sembunyikan Kegiatan Selesai (Default Tercentang) -->
+            <label class="flex items-center gap-2 cursor-pointer select-none font-medium bg-emerald-50 text-emerald-900 border border-emerald-200 px-3 py-1.5 rounded-lg hover:bg-emerald-100 transition">
+              <input type="checkbox" id="hidePastEvents" checked onchange="filterTable()" class="w-4 h-4 text-emerald-600 rounded focus:ring-emerald-500 border-slate-300 accent-emerald-600 cursor-pointer">
+              <span>Sembunyikan kegiatan yang sudah selesai</span>
+            </label>
+
+            <!-- Keterangan Duplikat -->
+            <div class="flex items-center gap-1.5 text-slate-500">
+              <span class="inline-block w-3.5 h-3.5 rounded bg-red-600 border border-red-700"></span>
+              <span>Tanggal Duplikat</span>
+            </div>
           </div>
+
           <div id="recordCount" class="font-medium text-slate-600">Memuat data...</div>
         </div>
       </div>
@@ -115,6 +126,7 @@
             <thead class="bg-emerald-900/10 text-slate-700 border-b border-slate-200 font-semibold uppercase text-xs">
               <tr>
                 <th class="p-3 w-10 text-center">No</th>
+                <th class="p-3 w-28 text-center">Status</th>
                 <th class="p-3">Tgl Acara</th>
                 <th class="p-3">Waktu</th>
                 <th class="p-3">Kegiatan</th>
@@ -126,7 +138,7 @@
             </thead>
             <tbody id="tableBody" class="table-zebra divide-y divide-slate-100">
               <tr>
-                <td colspan="8" class="text-center py-8 text-slate-400">
+                <td colspan="9" class="text-center py-8 text-slate-400">
                   <i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...
                 </td>
               </tr>
@@ -314,7 +326,7 @@
       script.id = 'jsonp_' + callbackName;
       script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}&_=${Date.now()}`;
       script.onerror = function() {
-        document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500 text-xs">Gagal memuat data dari server Apps Script.</td></tr>`;
+        document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="text-center py-6 text-rose-500 text-xs">Gagal memuat data dari server Apps Script.</td></tr>`;
         showToast('error', 'Koneksi Gagal', 'Tidak dapat mengambil jadwal dari Google Apps Script.');
       };
       document.body.appendChild(script);
@@ -322,7 +334,7 @@
 
     function loadData() {
       const tbody = document.getElementById('tableBody');
-      tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
+      tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
 
       window.handleMonitorData = function(data) {
         masterData = data;
@@ -339,6 +351,24 @@
         return new Date(parts[2], parts[1] - 1, parts[0]);
       }
       return null;
+    }
+
+    // Helper: Cek apakah jadwal sudah lewat dibandingkan saat ini
+    function isEventPast(dmyStr, jamOutStr) {
+      if (!dmyStr) return false;
+      const parts = dmyStr.split('/');
+      if (parts.length !== 3) return false;
+
+      let hour = 23;
+      let min = 59;
+      if (jamOutStr && jamOutStr.includes(':')) {
+        const t = jamOutStr.split(':');
+        hour = parseInt(t[0], 10) || 23;
+        min = parseInt(t[1], 10) || 59;
+      }
+
+      const eventEnd = new Date(parts[2], parts[1] - 1, parts[0], hour, min, 0);
+      return eventEnd.getTime() < Date.now();
     }
 
     function resetDateFilter() {
@@ -362,6 +392,7 @@
       const q = document.getElementById('searchInput').value.toLowerCase();
       const startVal = document.getElementById('filterStartDate').value;
       const endVal = document.getElementById('filterEndDate').value;
+      const hidePast = document.getElementById('hidePastEvents').checked;
       const tbody = document.getElementById('tableBody');
       const countLabel = document.getElementById('recordCount');
       tbody.innerHTML = '';
@@ -369,6 +400,7 @@
       const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
       const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
 
+      // Hitung duplikasi tanggal
       const dateCounts = {};
       masterData.forEach(item => {
         if (item.tglAcara) {
@@ -377,6 +409,10 @@
       });
 
       let filtered = masterData.filter(d => {
+        // Filter: Sembunyikan kegiatan yang sudah selesai jika checkbox tercentang
+        const past = isEventPast(d.tglAcara, d.jamSelesai);
+        if (hidePast && past) return false;
+
         const matchesKeyword = 
           (d.namaKegiatan && d.namaKegiatan.toLowerCase().includes(q)) ||
           (d.penyelenggara && d.penyelenggara.toLowerCase().includes(q)) ||
@@ -401,22 +437,42 @@
       countLabel.innerText = `Menampilkan: ${filtered.length} acara`;
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400 text-xs">Tidak ada data jadwal ditemukan pada filter ini.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-6 text-slate-400 text-xs">Tidak ada data jadwal ditemukan pada filter ini.</td></tr>`;
         return;
       }
 
       filtered.forEach((row, index) => {
         const isDuplicate = dateCounts[row.tglAcara] > 1;
+        const past = isEventPast(row.tglAcara, row.jamSelesai);
+
         const dateCellClass = isDuplicate 
           ? "p-2 font-bold bg-red-600 text-yellow-300 rounded whitespace-nowrap shadow-sm"
           : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
 
         const cleanHP = row.nomorHP ? String(row.nomorHP).replace(/[^0-9]/g, '') : '';
 
+        // Tampilan Kolom Status Selesai / Mendatang
+        let statusBadge = '';
+        if (past) {
+          statusBadge = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-300" title="Jadwal acara telah selesai">
+              <i class="fa-solid fa-check-double text-emerald-600"></i> Selesai
+            </span>
+          `;
+        } else {
+          statusBadge = `
+            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-sky-100 text-sky-800 border border-sky-300">
+              <i class="fa-solid fa-clock text-sky-600"></i> Aktif
+            </span>
+          `;
+        }
+
         const tr = document.createElement('tr');
-        tr.className = "transition";
+        // Jika sudah lewat, baris diberi efek sedikit redup agar perhatian tertuju pada jadwal aktif
+        tr.className = past ? "opacity-75 transition" : "transition";
         tr.innerHTML = `
           <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
+          <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
           <td class="p-2">
             <span class="${dateCellClass} inline-block px-2.5 py-1">
               ${row.tglAcara}
@@ -528,7 +584,7 @@
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
         
-        showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon dan notifikasi WhatsApp sedang diproses.');
+        showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon.');
         
         document.getElementById('bookingForm').reset();
         document.getElementById('slotStatus').innerText = 'Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.';
