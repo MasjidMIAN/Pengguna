@@ -9,7 +9,7 @@
   <style>
     /* Zebra Cross Baris Genap: Biru Terang Lembut */
     .table-zebra tr:nth-child(even) {
-      background-color: #f0f7ff; /* soft light sky blue */
+      background-color: #f0f7ff;
     }
     .table-zebra tr:nth-child(odd) {
       background-color: #ffffff;
@@ -17,11 +17,30 @@
     .table-zebra tr:hover {
       background-color: #e0f0fe !important;
     }
+
+    /* Animasi Toast */
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+    .toast-enter {
+      animation: slideIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .toast-exit {
+      animation: slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12">
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen pb-12 relative">
 
-  <!-- Nav Header -->
+  <!-- Container Toast Notification (Pojok Kanan Atas) -->
+  <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+  <!-- Header Navigasi -->
   <header class="bg-emerald-800 text-white shadow sticky top-0 z-40">
     <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-3">
       <div class="flex items-center gap-3">
@@ -57,7 +76,7 @@
             <input type="text" id="searchInput" oninput="filterTable()" placeholder="Cari kegiatan, unit, pemateri..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-emerald-600">
           </div>
 
-          <!-- Date Filter (Dari - Sampai) -->
+          <!-- Filter Tanggal (Dari - Sampai) -->
           <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
             <div class="flex items-center gap-1.5 bg-slate-50 border border-slate-300 px-2.5 py-1.5 rounded-lg">
               <label for="filterStartDate" class="text-slate-500 font-medium text-xs">Dari:</label>
@@ -89,7 +108,7 @@
         </div>
       </div>
 
-      <!-- Tabel Monitor dengan Zebra Cross Biru Terang -->
+      <!-- Tabel Jadwal -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm border-collapse">
@@ -223,6 +242,51 @@
       loadData();
     };
 
+    // --- KOMPONEN TOAST NOTIFICATION ---
+    function showToast(type, title, message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = "pointer-events-auto flex items-start gap-3 p-4 rounded-xl shadow-lg border text-sm transition-all toast-enter";
+
+      let iconHtml = '';
+      if (type === 'success') {
+        toast.classList.add('bg-white', 'border-emerald-200', 'text-slate-800');
+        iconHtml = '<i class="fa-solid fa-circle-check text-emerald-600 text-lg mt-0.5"></i>';
+      } else if (type === 'warning') {
+        toast.classList.add('bg-white', 'border-amber-200', 'text-slate-800');
+        iconHtml = '<i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg mt-0.5"></i>';
+      } else {
+        toast.classList.add('bg-white', 'border-rose-200', 'text-slate-800');
+        iconHtml = '<i class="fa-solid fa-circle-xmark text-rose-500 text-lg mt-0.5"></i>';
+      }
+
+      toast.innerHTML = `
+        ${iconHtml}
+        <div class="flex-1">
+          <h4 class="font-bold text-xs uppercase tracking-wide ${type === 'success' ? 'text-emerald-700' : type === 'warning' ? 'text-amber-700' : 'text-rose-700'}">${title}</h4>
+          <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">${message}</p>
+        </div>
+        <button onclick="dismissToast(this.parentElement)" class="text-slate-400 hover:text-slate-600 ml-2">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        dismissToast(toast);
+      }, 5000);
+    }
+
+    function dismissToast(toast) {
+      if (!toast) return;
+      toast.classList.remove('toast-enter');
+      toast.classList.add('toast-exit');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+
     function switchTab(tab) {
       const monSec = document.getElementById('sectionMonitor');
       const bookSec = document.getElementById('sectionBooking');
@@ -251,6 +315,7 @@
       script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}&_=${Date.now()}`;
       script.onerror = function() {
         document.getElementById('tableBody').innerHTML = `<tr><td colspan="8" class="text-center py-6 text-rose-500 text-xs">Gagal memuat data dari server Apps Script.</td></tr>`;
+        showToast('error', 'Koneksi Gagal', 'Tidak dapat mengambil jadwal dari Google Apps Script.');
       };
       document.body.appendChild(script);
     }
@@ -282,7 +347,6 @@
       filterTable();
     }
 
-    // Mengurutkan kronologis tanggal dan jam di sisi frontend
     function sortChronological(arr) {
       return arr.sort((a, b) => {
         const da = parseDMY(a.tglAcara) || new Date(9999, 11, 31);
@@ -305,7 +369,6 @@
       const startDate = startVal ? new Date(startVal + 'T00:00:00') : null;
       const endDate = endVal ? new Date(endVal + 'T23:59:59') : null;
 
-      // Hitung duplikasi tanggal
       const dateCounts = {};
       masterData.forEach(item => {
         if (item.tglAcara) {
@@ -333,7 +396,6 @@
         return true;
       });
 
-      // Urutkan jadwal yang difilter
       filtered = sortChronological(filtered);
 
       countLabel.innerText = `Menampilkan: ${filtered.length} acara`;
@@ -435,7 +497,7 @@
 
       const hpRegex = /^628[0-9]{8,12}$/;
       if (!hpRegex.test(noHP)) {
-        alert('Nomor HP tidak valid!\nNomor HP wajib menggunakan format internasional diawali 628.');
+        showToast('warning', 'Validasi Gagal', 'Nomor HP wajib format internasional diawali 628 (contoh: 628123456789).');
         document.getElementById('nomorHP').focus();
         return;
       }
@@ -465,19 +527,21 @@
       .then(() => {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
-        alert('Pengajuan berhasil terkirim!\nNotifikasi WhatsApp sedang dikirim ke kontak yang didaftarkan.');
+        
+        showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon dan notifikasi WhatsApp sedang diproses.');
+        
         document.getElementById('bookingForm').reset();
         document.getElementById('slotStatus').innerText = 'Silakan pilih tanggal acara untuk melihat jadwal yang sudah terisi dan slot yang tersedia.';
         
         setTimeout(() => {
           loadData();
           switchTab('monitor');
-        }, 1500);
+        }, 1200);
       })
       .catch(err => {
         btn.disabled = false;
         btn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Kirim Pengajuan`;
-        alert('Pengajuan terkirim! Memperbarui data...');
+        showToast('success', 'Terkirim', 'Pengajuan telah diproses.');
         document.getElementById('bookingForm').reset();
         loadData();
         switchTab('monitor');
