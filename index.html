@@ -127,7 +127,7 @@
               <tr>
                 <th class="p-3 w-10 text-center">No</th>
                 <th class="p-3 w-28 text-center">Status</th>
-                <th class="p-3">Tgl Acara</th>
+                <th class="p-3">Hari & Tgl Acara</th>
                 <th class="p-3">Waktu</th>
                 <th class="p-3">Kegiatan</th>
                 <th class="p-3">Penyelenggara</th>
@@ -250,6 +250,9 @@
 
     let masterData = [];
 
+    // Daftar nama hari
+    const NAMA_HARI = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"];
+
     window.onload = function() {
       loadData();
     };
@@ -353,6 +356,14 @@
       return null;
     }
 
+    // Mengambil Nama Hari + Tanggal (contoh: Ahad, 04/10/2026)
+    function getHariTanggal(dmyStr) {
+      const d = parseDMY(dmyStr);
+      if (!d) return dmyStr;
+      const hari = NAMA_HARI[d.getDay()];
+      return `${hari}, ${dmyStr}`;
+    }
+
     // Helper: Cek apakah jadwal sudah lewat dibandingkan saat ini
     function isEventPast(dmyStr, jamOutStr) {
       if (!dmyStr) return false;
@@ -409,16 +420,18 @@
       });
 
       let filtered = masterData.filter(d => {
-        // Filter: Sembunyikan kegiatan yang sudah selesai jika checkbox tercentang
         const past = isEventPast(d.tglAcara, d.jamSelesai);
         if (hidePast && past) return false;
+
+        const teksHariTanggal = getHariTanggal(d.tglAcara).toLowerCase();
 
         const matchesKeyword = 
           (d.namaKegiatan && d.namaKegiatan.toLowerCase().includes(q)) ||
           (d.penyelenggara && d.penyelenggara.toLowerCase().includes(q)) ||
           (d.pemateri && d.pemateri.toLowerCase().includes(q)) ||
           (d.penanggungJawab && d.penanggungJawab.toLowerCase().includes(q)) ||
-          (d.tglAcara && d.tglAcara.includes(q));
+          (d.tglAcara && d.tglAcara.includes(q)) ||
+          teksHariTanggal.includes(q);
 
         if (!matchesKeyword) return false;
 
@@ -450,8 +463,8 @@
           : "p-2 font-semibold text-slate-800 whitespace-nowrap text-xs sm:text-sm";
 
         const cleanHP = row.nomorHP ? String(row.nomorHP).replace(/[^0-9]/g, '') : '';
+        const teksTglDenganHari = getHariTanggal(row.tglAcara);
 
-        // Tampilan Kolom Status Selesai / Mendatang
         let statusBadge = '';
         if (past) {
           statusBadge = `
@@ -468,14 +481,13 @@
         }
 
         const tr = document.createElement('tr');
-        // Jika sudah lewat, baris diberi efek sedikit redup agar perhatian tertuju pada jadwal aktif
         tr.className = past ? "opacity-75 transition" : "transition";
         tr.innerHTML = `
           <td class="p-3 text-center text-slate-400 font-mono text-xs">${index + 1}</td>
           <td class="p-3 text-center whitespace-nowrap">${statusBadge}</td>
           <td class="p-2">
             <span class="${dateCellClass} inline-block px-2.5 py-1">
-              ${row.tglAcara}
+              ${teksTglDenganHari}
               ${isDuplicate ? '<i class="fa-solid fa-triangle-exclamation ml-1 text-xs" title="Tanggal memiliki lebih dari satu acara"></i>' : ''}
             </span>
           </td>
