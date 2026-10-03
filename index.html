@@ -656,7 +656,8 @@
         } else if (past) {
           borderCard = 'border-l-4 border-l-slate-400'; // Selesai = Abu-abu (atau border-l-emerald-600)
         }
-        card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderDuplikat} ${past ? 'opacity-70' : ''}`;
+        
+        card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderCard} ${past ? 'opacity-70' : ''}`;
         
         card.innerHTML = `
           <div class="flex items-start justify-between gap-2">
