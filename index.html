@@ -78,7 +78,7 @@
         </div>
         <div>
           <h1 class="text-sm md:text-base font-bold leading-tight">Masjid Imam An-Nawawi (MIAN)</h1>
-          <p class="text-[11px] text-emerald-200 font-medium leading-none mt-0.5">Fasilitas Yayasan Al-Hanif Cilegon</p>
+          <p class="text-[11px] text-emerald-200 font-medium leading-none mt-0.5">List Penggunaan Fasilitas Masjid</p>
         </div>
       </div>
 
@@ -325,7 +325,7 @@
             <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center justify-between">
               <span class="flex items-center gap-1.5">
                 <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
-                <span>Nomor HP (WhatsApp) *</span>
+                <span>Nomor WhatsApp *</span>
               </span>
               <span class="text-xs font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
                 Wajib 628xxxx
@@ -348,7 +348,7 @@
           <div>
             <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
               <i class="fa-regular fa-envelope text-emerald-700"></i>
-              <span>Email Address</span>
+              <span>Email</span>
             </label>
             <input 
               type="email" 
@@ -765,7 +765,7 @@
             <div class="space-y-2">
               <div class="flex items-center gap-1.5 text-amber-800 font-bold text-xs sm:text-sm">
                 <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                <span>Slot jam yang sudah terisi pada tanggal ${result.tanggal}:</span>
+                <span>Sudah ada jam yang sudah terisi pada ${result.tanggal}:</span>
               </div>
               <ul class="list-disc list-inside bg-white p-3 rounded-xl border border-emerald-200 space-y-1">
                 ${listJadwal}
@@ -825,7 +825,7 @@
         showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon.');
         
         document.getElementById('bookingForm').reset();
-        document.getElementById('slotStatus').innerText = 'Pilih tanggal acara di atas untuk melihat slot yang masih kosong atau yang sudah terisi.';
+        document.getElementById('slotStatus').innerText = 'Pilih tanggal untuk melihat slot yang masih kosong atau yang sudah terisi.';
         
         setTimeout(() => {
           loadData();
