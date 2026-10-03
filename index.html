@@ -5,24 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Monitor & Booking Fasilitas MIAN</title>
 
-  <!-- PWA & Mobile Meta -->
-  <link rel="manifest" href="./manifest.json">
+  <!-- PWA & Mobile Meta (Bypass Cache v3) -->
+  <link rel="manifest" href="./manifest.json?v=3">
   <meta name="theme-color" content="#065f46">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jadwal MIAN">
 
   <!-- Favicon & Apple Touch Icon -->
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
-  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png?v=3">
+  <link rel="apple-touch-icon" sizes="192x192" href="./icon-192.png?v=3">
+  <link rel="apple-touch-icon" sizes="512x512" href="./icon-512.png?v=3">
 
   <!-- Open Graph & WhatsApp Preview Metadata -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Monitor & Pengajuan Izin Penggunaan Fasilitas Masjid Imam An-Nawawi (MIAN)">
   <meta property="og:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
   <meta property="og:url" content="https://masjidmian.github.io/Pengguna/">
-  <meta property="og:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=2">
-  <meta property="og:image:secure_url" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=2">
+  <meta property="og:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=3">
+  <meta property="og:image:secure_url" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=3">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -30,7 +31,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Monitor & Pengajuan Fasilitas Masjid Imam An-Nawawi (MIAN)">
   <meta name="twitter:description" content="Lihat ketersediaan jam dan jadwal penggunaan fasilitas Masjid Imam An-Nawawi - Yayasan Al-Hanif Cilegon.">
-  <meta name="twitter:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=2">
+  <meta name="twitter:image" content="https://masjidmian.github.io/Pengguna/fotomian.jpg?v=3">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -50,10 +51,10 @@
     /* Animasi Toast */
     @keyframes slideIn {
       from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(-100%); opacity: 1; }
     }
     @keyframes slideOut {
-      from { transform: translateY(-100%); opacity: 0; }
+      from { transform: translateY(0); opacity: 1; }
       to { transform: translateY(-100%); opacity: 0; }
     }
     .toast-enter {
@@ -82,14 +83,22 @@
         </div>
       </div>
 
-      <!-- Navigasi Desktop -->
-      <div class="hidden md:flex gap-2">
-        <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm">
-          <i class="fa-solid fa-table-list mr-1.5"></i> Monitor Jadwal
+      <div class="flex items-center gap-2">
+        <!-- Tombol Install PWA (Otomatis Muncul di Browser yang Mendukung) -->
+        <button id="btnPwaInstall" class="hidden px-3 py-1.5 rounded-lg font-bold text-xs bg-amber-400 hover:bg-amber-300 text-slate-900 shadow transition flex items-center gap-1.5 active:scale-95">
+          <i class="fa-solid fa-download"></i>
+          <span>Install</span>
         </button>
-        <button onclick="switchTab('booking')" id="tabBookingBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition">
-          <i class="fa-solid fa-calendar-plus mr-1.5"></i> Form Pengajuan
-        </button>
+
+        <!-- Navigasi Desktop -->
+        <div class="hidden md:flex gap-2">
+          <button onclick="switchTab('monitor')" id="tabMonitorBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-700 hover:bg-emerald-600 transition shadow-sm">
+            <i class="fa-solid fa-table-list mr-1.5"></i> Monitor Jadwal
+          </button>
+          <button onclick="switchTab('booking')" id="tabBookingBtn" class="px-4 py-2 rounded-lg font-medium text-xs sm:text-sm bg-emerald-900/60 hover:bg-emerald-600 transition">
+            <i class="fa-solid fa-calendar-plus mr-1.5"></i> Form Pengajuan
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -188,7 +197,7 @@
       </div>
     </section>
 
-    <!-- 2. TAB FORM PENGAJUAN (DESAIN BARU: LEGA, BESAR, & JELAS DI HP) -->
+    <!-- 2. TAB FORM PENGAJUAN -->
     <section id="sectionBooking" class="hidden max-w-2xl mx-auto pb-6">
       <div class="bg-white p-5 sm:p-8 rounded-3xl border border-slate-200 shadow-sm">
         
@@ -357,7 +366,7 @@
               class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white transition shadow-sm">
           </div>
 
-          <!-- Tombol Kirim Besar & Nyaman Ditekan -->
+          <!-- Tombol Kirim -->
           <div class="pt-3">
             <button 
               type="submit" 
@@ -395,13 +404,40 @@
     let masterData = [];
     const NAMA_HARI = ["Ahad", "Senin", "Selasa", "Rabu", "Kamis", "Jum'at", "Sabtu"];
 
+    // Registrasi PWA & Penanganan Install Prompt
+    let deferredPrompt;
+    const btnInstall = document.getElementById('btnPwaInstall');
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js')
+        navigator.serviceWorker.register('./sw.js?v=3')
           .then(() => console.log('PWA Service Worker registered'))
           .catch((err) => console.log('SW registration failed:', err));
       });
     }
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      if (btnInstall) {
+        btnInstall.classList.remove('hidden');
+        btnInstall.onclick = async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+              btnInstall.classList.add('hidden');
+            }
+            deferredPrompt = null;
+          }
+        };
+      }
+    });
+
+    window.addEventListener('appinstalled', () => {
+      if (btnInstall) btnInstall.classList.add('hidden');
+      showToast('success', 'Aplikasi Terpasang', 'Ikon pintasan berhasil ditambahkan ke beranda HP.');
+    });
 
     window.onload = function() {
       loadData();
@@ -564,6 +600,7 @@
       return arr.sort((a, b) => {
         const da = parseDMY(a.tglAcara) || new Date(9999, 11, 31);
         const db = parseDMY(b.tglAcara) || new Date(9999, 11, 31);
+        if (da.getTime() !== db.getTime();
         if (da.getTime() !== db.getTime()) {
           return da.getTime() - db.getTime();
         }
@@ -636,7 +673,6 @@
         const maskedHP = maskNomorHP(row.nomorHP);
         const teksTglDenganHari = getHariTanggal(row.tglAcara);
 
-      // Badge Status Selesai / Aktif
         const statusBadge = past ? `
           <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
             <i class="fa-solid fa-check-double text-[10px]"></i> Selesai
@@ -647,16 +683,15 @@
           </span>
         `;
 
+        let borderCard = 'border-l-4 border-l-blue-600';
+        if (isDuplicate) {
+          borderCard = 'border-l-4 border-l-red-600';
+        } else if (past) {
+          borderCard = 'border-l-4 border-l-slate-400';
+        }
+
         // 1. RENDER KARTU MOBILE
         const card = document.createElement('div');
-        // KODE LEFT BORDER (Jika duplikat: Merah, jika selesai: Abu-abu/Hijau pudar, jika AKTIF: BIRU):
-        let borderCard = 'border-l-4 border-l-blue-600'; // Default Aktif = Biru
-        if (isDuplicate) {
-          borderCard = 'border-l-4 border-l-red-600'; // Tanggal bentrok/duplikat = Merah
-        } else if (past) {
-          borderCard = 'border-l-4 border-l-slate-400'; // Selesai = Abu-abu (atau border-l-emerald-600)
-        }
-        
         card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderCard} ${past ? 'opacity-70' : ''}`;
         
         card.innerHTML = `
@@ -668,7 +703,7 @@
                 </span>
                 ${isDuplicate ? '<span class="text-[10px] font-bold text-red-600 bg-red-50 border border-red-200 px-1 rounded">Duplikat</span>' : ''}
               </div>
-              <div class="font-mono text-xs font-semibold text-emerald-800 mt-1 flex items-center gap-1.5">
+              <div class="font-mono text-xs font-semibold text-blue-700 mt-1 flex items-center gap-1.5">
                 <i class="fa-regular fa-clock text-[11px]"></i>
                 <span>${row.jamMulai} - ${row.jamSelesai} WIB</span>
               </div>
@@ -765,7 +800,7 @@
             <div class="space-y-2">
               <div class="flex items-center gap-1.5 text-amber-800 font-bold text-xs sm:text-sm">
                 <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
-                <span>Sudah ada jam yang sudah terisi pada ${result.tanggal}:</span>
+                <span>Sudah ada jam yang terisi pada ${result.tanggal}:</span>
               </div>
               <ul class="list-disc list-inside bg-white p-3 rounded-xl border border-emerald-200 space-y-1">
                 ${listJadwal}
