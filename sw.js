@@ -1,8 +1,10 @@
-const CACHE_NAME = 'mian-pwa-v1';
+const CACHE_NAME = 'mian-pwa-v2'; // Naikkan versi cache
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
 self.addEventListener('install', (e) => {
@@ -26,7 +28,6 @@ self.addEventListener('activate', (e) => {
 });
 
 self.addEventListener('fetch', (e) => {
-  // Hanya cache GET asset statis lokal
   if (e.request.method === 'GET' && e.request.url.startsWith(self.location.origin)) {
     e.respondWith(
       caches.match(e.request).then((res) => res || fetch(e.request))
