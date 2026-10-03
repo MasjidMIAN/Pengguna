@@ -649,7 +649,13 @@
 
         // 1. RENDER KARTU MOBILE
         const card = document.createElement('div');
-        const borderDuplikat = isDuplicate ? 'border-l-4 border-l-red-600' : 'border-l-4 border-l-emerald-600';
+        // KODE LEFT BORDER (Jika duplikat: Merah, jika selesai: Abu-abu/Hijau pudar, jika AKTIF: BIRU):
+        let borderCard = 'border-l-4 border-l-blue-600'; // Default Aktif = Biru
+        if (isDuplicate) {
+          borderCard = 'border-l-4 border-l-red-600'; // Tanggal bentrok/duplikat = Merah
+        } else if (past) {
+          borderCard = 'border-l-4 border-l-slate-400'; // Selesai = Abu-abu (atau border-l-emerald-600)
+        }
         card.className = `bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm space-y-2.5 ${borderDuplikat} ${past ? 'opacity-70' : ''}`;
         
         card.innerHTML = `
