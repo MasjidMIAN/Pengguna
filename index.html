@@ -51,10 +51,10 @@
     /* Animasi Toast */
     @keyframes slideIn {
       from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(-100%); opacity: 1; }
+      to { transform: translateY(0); opacity: 1; }
     }
     @keyframes slideOut {
-      from { transform: translateY(0); opacity: 1; }
+      from { transform: translateY(-100%); opacity: 0; }
       to { transform: translateY(-100%); opacity: 0; }
     }
     .toast-enter {
@@ -84,7 +84,7 @@
       </div>
 
       <div class="flex items-center gap-2">
-        <!-- Tombol Install PWA (Otomatis Muncul di Browser yang Mendukung) -->
+        <!-- Tombol Install PWA -->
         <button id="btnPwaInstall" class="hidden px-3 py-1.5 rounded-lg font-bold text-xs bg-amber-400 hover:bg-amber-300 text-slate-900 shadow transition flex items-center gap-1.5 active:scale-95">
           <i class="fa-solid fa-download"></i>
           <span>Install</span>
@@ -600,7 +600,6 @@
       return arr.sort((a, b) => {
         const da = parseDMY(a.tglAcara) || new Date(9999, 11, 31);
         const db = parseDMY(b.tglAcara) || new Date(9999, 11, 31);
-        if (da.getTime() !== db.getTime();
         if (da.getTime() !== db.getTime()) {
           return da.getTime() - db.getTime();
         }
