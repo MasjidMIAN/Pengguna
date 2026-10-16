@@ -55,7 +55,7 @@
     }
     @keyframes slideOut {
       from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(-100%); opacity: 1; }
     }
     .toast-enter {
       animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -624,10 +624,12 @@
       return eventEnd.getTime() < Date.now();
     }
 
-    // --- LOGIKA KALENDER MINI DENGAN SLIDER/ROTATOR ---
+    // --- LOGIKA KALENDER MINI BULANAN DENGAN SLIDER/ROTATOR ---
     function renderCalendar() {
       const monthYearLabel = document.getElementById('calMonthYear');
       const grid = document.getElementById('calDaysGrid');
+      if (!monthYearLabel || !grid) return;
+
       grid.innerHTML = '';
 
       const year = currentCalDate.getFullYear();
@@ -638,7 +640,6 @@
       const firstDayIndex = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
 
-      // Peta jadwal per tanggal DMY
       const scheduleMap = {};
       masterData.forEach(item => {
         if (!item.tglAcara) return;
@@ -649,14 +650,12 @@
       const today = new Date();
       const todayDMY = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
 
-      // Slot kosong sebelum tanggal 1
       for (let i = 0; i < firstDayIndex; i++) {
         const emptyDiv = document.createElement('div');
         emptyDiv.className = "h-8 sm:h-9";
         grid.appendChild(emptyDiv);
       }
 
-      // Render setiap tanggal dalam bulan ini
       for (let day = 1; day <= totalDays; day++) {
         const dmy = `${String(day).padStart(2, '0')}/${String(month + 1).padStart(2, '0')}/${year}`;
         const events = scheduleMap[dmy] || [];
@@ -715,7 +714,6 @@
       document.getElementById('calSelectedInfo').innerText = `Menampilkan jadwal: ${getHariTanggal(dmy)}`;
       document.getElementById('btnResetCalFilter').classList.remove('hidden');
       
-      // Kosongkan filter tanggal input biasa agar sinkron
       document.getElementById('filterStartDate').value = '';
       document.getElementById('filterEndDate').value = '';
       
@@ -793,7 +791,6 @@
       });
 
       let filtered = masterData.filter(d => {
-        // Filter dari Kalender Mini
         if (selectedCalDMY && d.tglAcara !== selectedCalDMY) {
           return false;
         }
