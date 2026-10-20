@@ -108,7 +108,6 @@
       
       <!-- KALENDER KECIL BULANAN DENGAN ROTATOR / SLIDER -->
       <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-        <!-- Rotator Header -->
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">
@@ -133,7 +132,6 @@
           </div>
         </div>
 
-        <!-- Grid Nama Hari Kalender -->
         <div class="grid grid-cols-7 text-center font-bold text-[11px] text-slate-400 border-b border-slate-100 pb-1.5">
           <span class="text-rose-500">Aha</span>
           <span>Sen</span>
@@ -144,10 +142,8 @@
           <span>Sab</span>
         </div>
 
-        <!-- Grid Tanggal Kalender (Diisi Otomatis JS) -->
         <div id="calDaysGrid" class="grid grid-cols-7 gap-1 sm:gap-1.5 text-center text-xs"></div>
 
-        <!-- Indikator Simbol Kalender -->
         <div class="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-[10px] sm:text-[11px] text-slate-500">
           <div class="flex items-center gap-3">
             <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600"></span> Acara Aktif</span>
@@ -271,30 +267,42 @@
               class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-semibold text-slate-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition cursor-pointer shadow-sm">
           </div>
 
-          <!-- Unit Penyelenggara (Dinamis Kolom H + Input Manual Opsional) -->
-          <div>
+          <!-- Unit Penyelenggara (SEARCHABLE DROPDOWN) -->
+          <div class="relative">
             <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
               <i class="fa-solid fa-building-columns text-emerald-700"></i>
               <span>Penyelenggara (Unit Al-Hanif) *</span>
             </label>
-            <select 
-              id="penyelenggara" 
-              required 
-              onchange="handlePenyelenggaraChange()"
-              class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-medium text-slate-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition cursor-pointer shadow-sm">
-              <option value="">Pilih Lembaga / Unit Yayasan...</option>
-              <option value="SDIT Alhanif">SDIT Alhanif</option>
-              <option value="SMPIT Putri Alhanif">SMPIT Putri Alhanif</option>
-              <option value="SMAIT Putri Alhanif">SMAIT Putri Alhanif</option>
-              <option value="RA Alhanif">RA Alhanif</option>
-              <option value="KBIH Alhanif">KBIH Alhanif</option>
-              <option value="DKM MIAN">DKM MIAN</option>
-              <option value="Lajnah Dakwah">Lajnah Dakwah</option>
-              <option value="Lajnah Pendidikan">Lajnah Pendidikan</option>
-              <option value="Tim Janiz MIAN">Tim Janiz MIAN</option>
-              <option value="Tim Manasik Haji">Tim Manasik Haji</option>
-              <option value="__MANUAL__">➕ Lainnya (Ketik Manual...)</option>
-            </select>
+            
+            <!-- Hidden Input Asli untuk Validasi Form Submit -->
+            <input type="hidden" id="penyelenggara" required value="">
+
+            <!-- Tombol Pemicu Dropdown -->
+            <button 
+              type="button" 
+              id="customSelectBtn" 
+              onclick="togglePenyelenggaraDropdown()"
+              class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-medium text-left flex items-center justify-between transition focus:outline-none focus:border-emerald-600 focus:bg-white shadow-sm">
+              <span id="customSelectLabel" class="text-slate-400">Pilih Lembaga / Unit Yayasan...</span>
+              <i class="fa-solid fa-chevron-down text-xs text-slate-400"></i>
+            </button>
+
+            <!-- Menu Panel Dropdown & Kolom Pencarian -->
+            <div id="customSelectMenu" class="hidden absolute left-0 right-0 top-full mt-1.5 bg-white border-2 border-emerald-600 rounded-2xl shadow-2xl z-50 overflow-hidden">
+              <!-- Kolom Search Input -->
+              <div class="p-2.5 border-b border-slate-100 bg-slate-50 relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input 
+                  type="text" 
+                  id="penyelenggaraSearchInput" 
+                  oninput="filterPenyelenggaraList()"
+                  placeholder="Cari lembaga / unit..." 
+                  class="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-emerald-600 transition">
+              </div>
+
+              <!-- Daftar Opsi Scrollable -->
+              <div id="customSelectOptions" class="max-h-60 overflow-y-auto divide-y divide-slate-50 text-sm"></div>
+            </div>
 
             <!-- Input Teks Tambahan jika memilih opsi Manual -->
             <div id="wrapperPenyelenggaraManual" class="hidden mt-2.5">
@@ -458,6 +466,13 @@
     let currentCalDate = new Date();
     let selectedCalDMY = null;
 
+    // State Penyelenggara Searchable
+    let masterPenyelenggaraList = [
+      "SDIT Alhanif", "SMPIT Putri Alhanif", "SMAIT Putri Alhanif",
+      "RA Alhanif", "KBIH Alhanif", "DKM MIAN",
+      "Lajnah Dakwah", "Lajnah Pendidikan", "Tim Janiz MIAN", "Tim Manasik Haji"
+    ];
+
     let deferredPrompt;
     const btnInstall = document.getElementById('btnPwaInstall');
 
@@ -494,6 +509,7 @@
 
     window.onload = function() {
       loadData();
+      renderCustomPenyelenggaraOptions(masterPenyelenggaraList);
       loadPenyelenggara();
     };
 
@@ -582,50 +598,105 @@
       document.body.appendChild(script);
     }
 
-    // --- AMBIL DAFTAR PENYELENGGARA DARI SHEET KOLOM H ---
-    function loadPenyelenggara() {
-      window.handlePenyelenggaraData = function(list) {
-        if (!Array.isArray(list) || list.length === 0) return;
-
-        const select = document.getElementById('penyelenggara');
-        select.innerHTML = '<option value="">Pilih Lembaga / Unit Yayasan...</option>';
-        
-        list.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item;
-          opt.textContent = item;
-          select.appendChild(opt);
-        });
-
-        const optManual = document.createElement('option');
-        optManual.value = "__MANUAL__";
-        optManual.textContent = "➕ Lainnya (Ketik Manual...)";
-        select.appendChild(optManual);
-      };
-
-      fetchJSONP(`${API_URL}?action=getPenyelenggara`, 'handlePenyelenggaraData');
+    // --- FITUR SEARCHABLE DROPDOWN PENYELENGGARA ---
+    function togglePenyelenggaraDropdown() {
+      const menu = document.getElementById('customSelectMenu');
+      const isHidden = menu.classList.contains('hidden');
+      if (isHidden) {
+        menu.classList.remove('hidden');
+        const searchInput = document.getElementById('penyelenggaraSearchInput');
+        searchInput.value = '';
+        renderCustomPenyelenggaraOptions(masterPenyelenggaraList);
+        setTimeout(() => searchInput.focus(), 50);
+      } else {
+        menu.classList.add('hidden');
+      }
     }
 
-    function handlePenyelenggaraChange() {
-      const select = document.getElementById('penyelenggara');
-      const wrapper = document.getElementById('wrapperPenyelenggaraManual');
-      const inputManual = document.getElementById('penyelenggaraManual');
+    function renderCustomPenyelenggaraOptions(list) {
+      const container = document.getElementById('customSelectOptions');
+      const currentVal = document.getElementById('penyelenggara').value;
+      container.innerHTML = '';
 
-      if (select.value === '__MANUAL__') {
-        wrapper.classList.remove('hidden');
-        inputManual.required = true;
-        inputManual.focus();
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div class="p-3 text-center text-xs text-slate-400">Tidak ada unit ditemukan.</div>`;
       } else {
-        wrapper.classList.add('hidden');
+        list.forEach(item => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSelected = (currentVal === item);
+          btn.className = `w-full text-left px-4 py-2.5 hover:bg-emerald-50 transition flex items-center justify-between ${isSelected ? 'bg-emerald-50/80 font-bold text-emerald-800' : 'text-slate-700 font-medium'}`;
+          btn.innerHTML = `<span>${item}</span>${isSelected ? '<i class="fa-solid fa-check text-emerald-700 text-xs"></i>' : ''}`;
+          btn.onclick = () => selectPenyelenggaraOption(item);
+          container.appendChild(btn);
+        });
+      }
+
+      // Opsi Manual / Tambahan Baru Selalu Ada di Bagian Bawah
+      const manualBtn = document.createElement('button');
+      manualBtn.type = 'button';
+      const isManualSelected = (currentVal === '__MANUAL__');
+      manualBtn.className = `w-full text-left px-4 py-2.5 bg-amber-50/70 hover:bg-amber-100/70 text-amber-900 font-bold transition flex items-center justify-between border-t border-amber-100 ${isManualSelected ? 'ring-2 ring-amber-400 inset' : ''}`;
+      manualBtn.innerHTML = `<span>➕ Lainnya (Ketik Manual...)</span>${isManualSelected ? '<i class="fa-solid fa-check text-amber-800 text-xs"></i>' : ''}`;
+      manualBtn.onclick = () => selectPenyelenggaraOption('__MANUAL__');
+      container.appendChild(manualBtn);
+    }
+
+    function filterPenyelenggaraList() {
+      const q = document.getElementById('penyelenggaraSearchInput').value.toLowerCase().trim();
+      const filtered = masterPenyelenggaraList.filter(item => item.toLowerCase().includes(q));
+      renderCustomPenyelenggaraOptions(filtered);
+    }
+
+    function selectPenyelenggaraOption(val) {
+      const hiddenInput = document.getElementById('penyelenggara');
+      const label = document.getElementById('customSelectLabel');
+      const wrapperManual = document.getElementById('wrapperPenyelenggaraManual');
+      const inputManual = document.getElementById('penyelenggaraManual');
+      const menu = document.getElementById('customSelectMenu');
+
+      hiddenInput.value = val;
+      menu.classList.add('hidden');
+
+      if (val === '__MANUAL__') {
+        label.innerText = '➕ Lainnya (Ketik Manual...)';
+        label.className = 'text-amber-800 font-bold';
+        wrapperManual.classList.remove('hidden');
+        inputManual.required = true;
+        setTimeout(() => inputManual.focus(), 50);
+      } else {
+        label.innerText = val;
+        label.className = 'text-slate-800 font-semibold';
+        wrapperManual.classList.add('hidden');
         inputManual.required = false;
         inputManual.value = '';
       }
     }
 
+    // Tutup dropdown jika klik di luar area
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('customSelectMenu');
+      const btn = document.getElementById('customSelectBtn');
+      if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+        menu.classList.add('hidden');
+      }
+    });
+
+    // Ambil Data Penyelenggara Kolom H dari Apps Script
+    function loadPenyelenggara() {
+      window.handlePenyelenggaraData = function(list) {
+        if (Array.isArray(list) && list.length > 0) {
+          masterPenyelenggaraList = list;
+          renderCustomPenyelenggaraOptions(masterPenyelenggaraList);
+        }
+      };
+
+      fetchJSONP(`${API_URL}?action=getPenyelenggara`, 'handlePenyelenggaraData');
+    }
+
     function loadData() {
       const tbody = document.getElementById('tableBody');
       const mobileList = document.getElementById('mobileCardList');
-      
       tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Memuat data jadwal...</td></tr>`;
       mobileList.innerHTML = `<div class="bg-white p-6 rounded-2xl text-center text-slate-400 text-xs border border-slate-200 shadow-sm"><i class="fa-solid fa-spinner fa-spin mr-2 text-emerald-600"></i> Memuat data jadwal...</div>`;
 
@@ -678,7 +749,7 @@
       return eventEnd.getTime() < Date.now();
     }
 
-    // --- LOGIKA KALENDER MINI DENGAN SLIDER/ROTATOR ---
+    // --- LOGIKA KALENDER MINI BULANAN DENGAN SLIDER/ROTATOR ---
     function renderCalendar() {
       const monthYearLabel = document.getElementById('calMonthYear');
       const grid = document.getElementById('calDaysGrid');
@@ -1048,8 +1119,14 @@
         return;
       }
 
-      // Ambil nilai Penyelenggara (Dropdown atau Input Manual)
+      // Ambil nilai Penyelenggara (Custom Dropdown atau Input Manual)
       const selectPenyelenggara = document.getElementById('penyelenggara').value;
+      if (!selectPenyelenggara) {
+        showToast('warning', 'Validasi Gagal', 'Silakan pilih unit penyelenggara.');
+        document.getElementById('customSelectBtn').focus();
+        return;
+      }
+
       const inputPenyelenggaraManual = document.getElementById('penyelenggaraManual').value.trim();
       let finalPenyelenggara = selectPenyelenggara;
 
@@ -1091,6 +1168,9 @@
         showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon.');
         
         document.getElementById('bookingForm').reset();
+        document.getElementById('penyelenggara').value = '';
+        document.getElementById('customSelectLabel').innerText = 'Pilih Lembaga / Unit Yayasan...';
+        document.getElementById('customSelectLabel').className = 'text-slate-400';
         document.getElementById('wrapperPenyelenggaraManual').classList.add('hidden');
         document.getElementById('slotStatus').innerText = 'Pilih tanggal untuk melihat slot yang masih kosong atau yang sudah terisi.';
         
@@ -1105,6 +1185,9 @@
         btn.innerHTML = `<i class="fa-solid fa-paper-plane text-lg"></i><span>Kirim Pengajuan Fasilitas</span>`;
         showToast('success', 'Terkirim', 'Pengajuan telah diproses.');
         document.getElementById('bookingForm').reset();
+        document.getElementById('penyelenggara').value = '';
+        document.getElementById('customSelectLabel').innerText = 'Pilih Lembaga / Unit Yayasan...';
+        document.getElementById('customSelectLabel').className = 'text-slate-400';
         document.getElementById('wrapperPenyelenggaraManual').classList.add('hidden');
         loadData();
         loadPenyelenggara();
