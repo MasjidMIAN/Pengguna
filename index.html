@@ -55,7 +55,7 @@
     }
     @keyframes slideOut {
       from { transform: translateY(-100%); opacity: 0; }
-      to { transform: translateY(-100%); opacity: 1; }
+      to { transform: translateY(-100%); opacity: 0; }
     }
     .toast-enter {
       animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
@@ -271,6 +271,7 @@
               class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-semibold text-slate-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition cursor-pointer shadow-sm">
           </div>
 
+          <!-- Unit Penyelenggara (Dinamis Kolom H + Input Manual Opsional) -->
           <div>
             <label class="block text-sm font-bold text-slate-800 mb-1.5 flex items-center gap-1.5">
               <i class="fa-solid fa-building-columns text-emerald-700"></i>
@@ -279,6 +280,7 @@
             <select 
               id="penyelenggara" 
               required 
+              onchange="handlePenyelenggaraChange()"
               class="w-full bg-slate-50 border-2 border-slate-200 rounded-2xl py-3 px-3.5 sm:py-3.5 sm:px-4 text-base font-medium text-slate-800 focus:outline-none focus:border-emerald-600 focus:bg-white transition cursor-pointer shadow-sm">
               <option value="">Pilih Lembaga / Unit Yayasan...</option>
               <option value="SDIT Alhanif">SDIT Alhanif</option>
@@ -288,11 +290,23 @@
               <option value="KBIH Alhanif">KBIH Alhanif</option>
               <option value="DKM MIAN">DKM MIAN</option>
               <option value="Lajnah Dakwah">Lajnah Dakwah</option>
-              <option value="Lajnah Dakwah">Lajnah Pendidikan</option>
+              <option value="Lajnah Pendidikan">Lajnah Pendidikan</option>
               <option value="Tim Janiz MIAN">Tim Janiz MIAN</option>
               <option value="Tim Manasik Haji">Tim Manasik Haji</option>
-              <option value="Lainnya">Lainnya / Tamu</option>
+              <option value="__MANUAL__">➕ Lainnya (Ketik Manual...)</option>
             </select>
+
+            <!-- Input Teks Tambahan jika memilih opsi Manual -->
+            <div id="wrapperPenyelenggaraManual" class="hidden mt-2.5">
+              <input 
+                type="text" 
+                id="penyelenggaraManual" 
+                placeholder="Ketik nama unit / penyelenggara baru..." 
+                class="w-full bg-emerald-50/50 border-2 border-emerald-300 rounded-2xl py-2.5 px-3.5 text-base font-medium text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-600 focus:bg-white transition shadow-sm">
+              <p class="text-[11px] text-emerald-700 mt-1 pl-1 font-medium">
+                💡 Nama unit baru ini akan otomatis tersimpan ke spreadsheet untuk pengajuan berikutnya.
+              </p>
+            </div>
           </div>
 
           <div id="availabilityPanel" class="p-4 rounded-2xl border-2 border-emerald-100 bg-emerald-50/40 shadow-sm transition">
@@ -480,6 +494,7 @@
 
     window.onload = function() {
       loadData();
+      loadPenyelenggara();
     };
 
     function showToast(type, title, message) {
@@ -562,11 +577,49 @@
       script.id = 'jsonp_' + callbackName;
       script.src = `${url}${url.includes('?') ? '&' : '?'}callback=${callbackName}&_=${Date.now()}`;
       script.onerror = function() {
-        document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="text-center py-6 text-rose-500 text-xs">Gagal memuat data dari server Apps Script.</td></tr>`;
-        document.getElementById('mobileCardList').innerHTML = `<div class="bg-white p-4 rounded-2xl text-center text-rose-500 text-xs border border-rose-200">Gagal memuat jadwal.</div>`;
-        showToast('error', 'Koneksi Gagal', 'Tidak dapat mengambil jadwal dari Google Apps Script.');
+        showToast('error', 'Koneksi Gagal', 'Tidak dapat mengambil data dari Google Apps Script.');
       };
       document.body.appendChild(script);
+    }
+
+    // --- AMBIL DAFTAR PENYELENGGARA DARI SHEET KOLOM H ---
+    function loadPenyelenggara() {
+      window.handlePenyelenggaraData = function(list) {
+        if (!Array.isArray(list) || list.length === 0) return;
+
+        const select = document.getElementById('penyelenggara');
+        select.innerHTML = '<option value="">Pilih Lembaga / Unit Yayasan...</option>';
+        
+        list.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item;
+          opt.textContent = item;
+          select.appendChild(opt);
+        });
+
+        const optManual = document.createElement('option');
+        optManual.value = "__MANUAL__";
+        optManual.textContent = "➕ Lainnya (Ketik Manual...)";
+        select.appendChild(optManual);
+      };
+
+      fetchJSONP(`${API_URL}?action=getPenyelenggara`, 'handlePenyelenggaraData');
+    }
+
+    function handlePenyelenggaraChange() {
+      const select = document.getElementById('penyelenggara');
+      const wrapper = document.getElementById('wrapperPenyelenggaraManual');
+      const inputManual = document.getElementById('penyelenggaraManual');
+
+      if (select.value === '__MANUAL__') {
+        wrapper.classList.remove('hidden');
+        inputManual.required = true;
+        inputManual.focus();
+      } else {
+        wrapper.classList.add('hidden');
+        inputManual.required = false;
+        inputManual.value = '';
+      }
     }
 
     function loadData() {
@@ -625,7 +678,7 @@
       return eventEnd.getTime() < Date.now();
     }
 
-    // --- LOGIKA KALENDER MINI BULANAN DENGAN SLIDER/ROTATOR ---
+    // --- LOGIKA KALENDER MINI DENGAN SLIDER/ROTATOR ---
     function renderCalendar() {
       const monthYearLabel = document.getElementById('calMonthYear');
       const grid = document.getElementById('calDaysGrid');
@@ -995,12 +1048,26 @@
         return;
       }
 
+      // Ambil nilai Penyelenggara (Dropdown atau Input Manual)
+      const selectPenyelenggara = document.getElementById('penyelenggara').value;
+      const inputPenyelenggaraManual = document.getElementById('penyelenggaraManual').value.trim();
+      let finalPenyelenggara = selectPenyelenggara;
+
+      if (selectPenyelenggara === '__MANUAL__') {
+        if (!inputPenyelenggaraManual) {
+          showToast('warning', 'Validasi Gagal', 'Silakan ketik nama unit penyelenggara.');
+          document.getElementById('penyelenggaraManual').focus();
+          return;
+        }
+        finalPenyelenggara = inputPenyelenggaraManual;
+      }
+
       btn.disabled = true;
       btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Mengirim Pengajuan...`;
 
       const params = new URLSearchParams();
       params.append('tglAcara', document.getElementById('tglAcara').value);
-      params.append('penyelenggara', document.getElementById('penyelenggara').value);
+      params.append('penyelenggara', finalPenyelenggara);
       params.append('jamMulai', document.getElementById('jamMulai').value);
       params.append('jamSelesai', document.getElementById('jamSelesai').value);
       params.append('namaKegiatan', document.getElementById('namaKegiatan').value);
@@ -1024,10 +1091,12 @@
         showToast('success', 'Pengajuan Berhasil!', 'Data tersimpan ke sheet Respon.');
         
         document.getElementById('bookingForm').reset();
+        document.getElementById('wrapperPenyelenggaraManual').classList.add('hidden');
         document.getElementById('slotStatus').innerText = 'Pilih tanggal untuk melihat slot yang masih kosong atau yang sudah terisi.';
         
         setTimeout(() => {
           loadData();
+          loadPenyelenggara();
           switchTab('monitor');
         }, 1200);
       })
@@ -1036,7 +1105,9 @@
         btn.innerHTML = `<i class="fa-solid fa-paper-plane text-lg"></i><span>Kirim Pengajuan Fasilitas</span>`;
         showToast('success', 'Terkirim', 'Pengajuan telah diproses.');
         document.getElementById('bookingForm').reset();
+        document.getElementById('wrapperPenyelenggaraManual').classList.add('hidden');
         loadData();
+        loadPenyelenggara();
         switchTab('monitor');
       });
     }
